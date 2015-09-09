@@ -4,13 +4,15 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.GridView;
 
 import com.example.petr.udacitypopularmovies.objects.Movie;
+import com.example.petr.udacitypopularmovies.objects.MovieAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,7 +31,7 @@ import java.util.ArrayList;
  */
 public class MainActivityFragment extends Fragment {
 
-    TextView textView;
+    GridView gridView;
     ArrayList<Movie>movies = new ArrayList<>();
 
     public MainActivityFragment() {
@@ -39,9 +41,11 @@ public class MainActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_main, container, false);
-        textView = (TextView) root.findViewById(R.id.text_view);
+
         FetchMovieTask fetchMovieTask = new FetchMovieTask();
         fetchMovieTask.execute();
+
+        gridView = (GridView)root.findViewById(R.id.grid_view);
 
         return root;
     }
@@ -147,7 +151,16 @@ public class MainActivityFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            textView.setText(movies.get(0).overview);
+            gridView.setAdapter(new MovieAdapter(getActivity(),movies));
+            adjustGridView();
+
+        }
+
+        private void adjustGridView() {
+            DisplayMetrics displaymetrics = new DisplayMetrics();
+
+            gridView.setNumColumns(GridView.AUTO_FIT);
+            gridView.setColumnWidth(displaymetrics.widthPixels/8);
         }
 
         void parseJson(JSONObject jsonObject) throws JSONException {

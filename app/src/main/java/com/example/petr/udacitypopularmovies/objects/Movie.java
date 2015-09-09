@@ -10,7 +10,7 @@ import org.json.JSONObject;
  * Created by petr on 09.09.2015.
  */
 public class Movie {
-    String title;
+    public String title;
     public String overview;
     int vote_average;
     int vote_count;
@@ -20,7 +20,7 @@ public class Movie {
     double popularity;
     int db_id;
     private String POSTER_BASE_URI = "http://image.tmdb.org/t/p/";
-    private String size = "w185";
+    private String size = "w780";
 
     public Movie (JSONObject object) throws JSONException {
         this.title = object.getString("title");
