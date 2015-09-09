@@ -10,43 +10,49 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.petr.udacitypopularmovies.objects.Movie;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment {
 
+    TextView textView;
+    ArrayList<Movie>movies = new ArrayList<>();
+
     public MainActivityFragment() {
     }
-    TextView textView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_main, container, false);
-        textView = (TextView)root.findViewById(R.id.text_view);
+        textView = (TextView) root.findViewById(R.id.text_view);
         FetchMovieTask fetchMovieTask = new FetchMovieTask();
         fetchMovieTask.execute();
 
         return root;
     }
 
-    public class FetchMovieTask extends AsyncTask<Void, Void, String> {
-        @Override
-        protected void onPostExecute(String aVoid) {
-            textView.setText(aVoid);
-        }
 
+
+    public class FetchMovieTask extends AsyncTask<Void, Void, Void> {
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
         @Override
-        protected String doInBackground(Void... params) {
+        protected Void doInBackground(Void... params) {
 
 //            if (params.length == 0) {
 //                return null;
@@ -129,14 +135,27 @@ public class MainActivityFragment extends Fragment {
                         Log.e(LOG_TAG, "Error closing stream", e);
                     }
                 }
-            } return movieJson.toString();
-//            try {
-//                return getWeatherDataFromJson(forecastJsonStr, numDays);
-//            } catch (JSONException e) {
-//                Log.e(LOG_TAG, e.getMessage(), e);
-//                e.printStackTrace();
-//                return null;
-//            }
+            }
+            try {
+                parseJson(new JSONObject(movieJson));
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, e.getMessage(), e);
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            textView.setText(movies.get(0).overview);
+        }
+
+        void parseJson(JSONObject jsonObject) throws JSONException {
+            JSONArray array = jsonObject.getJSONArray("results");
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject object = array.getJSONObject(i);
+                movies.add(new Movie(object));
+            }
         }
     }
 }
