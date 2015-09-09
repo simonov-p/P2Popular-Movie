@@ -1,6 +1,7 @@
 package com.example.petr.udacitypopularmovies.objects;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +52,11 @@ public class MovieAdapter extends BaseAdapter {
         Movie movie = movies.get(position);
         ImageView imageView = (ImageView)convertView.findViewById(R.id.list_item_image_view);
 
-        Picasso.with(mContext).load(movie.poster_path).into(imageView);
+        Log.e("mytag:view_size", convertView.getHeight() + "");
+        Log.e("mytag:parent_size", parent.getHeight() + "");
+
+        Picasso.with(mContext).load(movie.poster_path).
+                into(imageView);
 
         return convertView;
     }

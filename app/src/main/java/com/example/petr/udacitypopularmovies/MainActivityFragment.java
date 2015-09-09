@@ -152,15 +152,14 @@ public class MainActivityFragment extends Fragment {
         @Override
         protected void onPostExecute(Void aVoid) {
             gridView.setAdapter(new MovieAdapter(getActivity(),movies));
-            adjustGridView();
-
+//            adjustGridView();
         }
 
         private void adjustGridView() {
             DisplayMetrics displaymetrics = new DisplayMetrics();
 
-            gridView.setNumColumns(GridView.AUTO_FIT);
-            gridView.setColumnWidth(displaymetrics.widthPixels/8);
+//            gridView.setNumColumns(2);
+
         }
 
         void parseJson(JSONObject jsonObject) throws JSONException {

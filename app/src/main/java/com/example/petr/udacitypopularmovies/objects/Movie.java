@@ -20,7 +20,7 @@ public class Movie {
     double popularity;
     int db_id;
     private String POSTER_BASE_URI = "http://image.tmdb.org/t/p/";
-    private String size = "w780";
+    private String size = "w500";
 
     public Movie (JSONObject object) throws JSONException {
         this.title = object.getString("title");
