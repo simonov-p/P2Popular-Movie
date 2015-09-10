@@ -1,6 +1,8 @@
 package com.example.petr.udacitypopularmovies.objects;
 
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -8,15 +10,15 @@ import org.json.JSONObject;
 /**
  * Created by petr on 09.09.2015.
  */
-public class Movie {
+public class Movie implements Parcelable {
     public String title;
     public String overview;
-    int vote_average;
-    int vote_count;
-    Uri poster_path;
+    public int vote_average;
+    public int vote_count;
+    public Uri poster_path;
     Uri backdrop_path;
-    String release_date;
-    double popularity;
+    public String release_date;
+    public double popularity;
     int db_id;
     private String POSTER_BASE_URI = "http://image.tmdb.org/t/p/";
     private String size = "w500";
@@ -41,5 +43,48 @@ public class Movie {
                 .appendPath(secondaryUri)
                 .build();
         return uri;
+    }
+
+    private int mData;
+
+    public int describeContents() {
+        return 0;
+    }
+
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeInt(mData);
+    }
+
+    public static final Parcelable.Creator<Movie> CREATOR
+            = new Parcelable.Creator<Movie>() {
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
+
+    private Movie(Parcel in) {
+        mData = in.readInt();
+    }
+
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "title='" + title + '\'' +
+                ", overview='" + overview + '\'' +
+                ", vote_average=" + vote_average +
+                ", vote_count=" + vote_count +
+                ", poster_path=" + poster_path +
+                ", backdrop_path=" + backdrop_path +
+                ", release_date='" + release_date + '\'' +
+                ", popularity=" + popularity +
+                ", db_id=" + db_id +
+                ", POSTER_BASE_URI='" + POSTER_BASE_URI + '\'' +
+                ", size='" + size + '\'' +
+                ", mData=" + mData +
+                '}';
     }
 }

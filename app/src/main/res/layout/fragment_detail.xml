@@ -6,10 +6,6 @@
               android:layout_height="match_parent"
               tools:context="com.example.petr.udacitypopularmovies.DetailActivity$DetailFragment"
     >
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/detail_image_view"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -21,5 +17,10 @@
         android:layout_height="wrap_content"
         android:id="@+id/detail_description_text_view"
         android:text="description"/>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/detail_image_view"
+        android:src="@android:drawable/ic_dialog_map"/>
 
 </LinearLayout>

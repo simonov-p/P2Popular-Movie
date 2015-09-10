@@ -37,7 +37,8 @@ public class GridFragment extends Fragment {
 
     GridView gridView;
     ArrayList<Movie>movies = new ArrayList<>();
-    private MovieAdapter mAdapter;
+    public static MovieAdapter mAdapter;
+    public static String EXTRA = "s";
 
     public GridFragment() {
     }
@@ -61,9 +62,11 @@ public class GridFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Movie movie = mAdapter.getItem(position);
+                Log.e("mytag2", movie.toString());
+
                 Toast.makeText(getActivity(), movie.title, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getActivity(),DetailActivity.class);
-                intent.putExtra(Intent.EXTRA_TEXT, movie.title);
+                intent.putExtra(GridFragment.EXTRA, position);
                 startActivity(intent);
             }
         });
