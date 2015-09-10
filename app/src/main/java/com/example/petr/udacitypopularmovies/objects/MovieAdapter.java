@@ -35,7 +35,7 @@ public class MovieAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
+    public Movie getItem(int position) {
         return movies.get(position);
     }
 
@@ -51,9 +51,6 @@ public class MovieAdapter extends BaseAdapter {
         }
         Movie movie = movies.get(position);
         ImageView imageView = (ImageView)convertView.findViewById(R.id.list_item_image_view);
-
-        Log.e("mytag:view_size", convertView.getHeight() + "");
-        Log.e("mytag:parent_size", parent.getHeight() + "");
 
         Picasso.with(mContext).load(movie.poster_path).
                 into(imageView);

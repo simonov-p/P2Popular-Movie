@@ -1,16 +1,20 @@
-package com.example.petr.udacitypopularmovies;
+package com.example.petr.udacitypopularmovies.fragments;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
+import com.example.petr.udacitypopularmovies.DetailActivity;
+import com.example.petr.udacitypopularmovies.R;
 import com.example.petr.udacitypopularmovies.objects.Movie;
 import com.example.petr.udacitypopularmovies.objects.MovieAdapter;
 
@@ -29,12 +33,18 @@ import java.util.ArrayList;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment {
+public class GridFragment extends Fragment {
 
     GridView gridView;
     ArrayList<Movie>movies = new ArrayList<>();
+    private MovieAdapter mAdapter;
 
-    public MainActivityFragment() {
+    public GridFragment() {
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -46,6 +56,17 @@ public class MainActivityFragment extends Fragment {
         fetchMovieTask.execute();
 
         gridView = (GridView)root.findViewById(R.id.grid_view);
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Movie movie = mAdapter.getItem(position);
+                Toast.makeText(getActivity(), movie.title, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getActivity(),DetailActivity.class);
+                intent.putExtra(Intent.EXTRA_TEXT, movie.title);
+                startActivity(intent);
+            }
+        });
 
         return root;
     }
@@ -151,15 +172,8 @@ public class MainActivityFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            gridView.setAdapter(new MovieAdapter(getActivity(),movies));
-//            adjustGridView();
-        }
-
-        private void adjustGridView() {
-            DisplayMetrics displaymetrics = new DisplayMetrics();
-
-//            gridView.setNumColumns(2);
-
+            mAdapter = new MovieAdapter(getActivity(),movies);
+            gridView.setAdapter(mAdapter);
         }
 
         void parseJson(JSONObject jsonObject) throws JSONException {

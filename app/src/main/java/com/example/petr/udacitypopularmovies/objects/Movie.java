@@ -1,7 +1,6 @@
 package com.example.petr.udacitypopularmovies.objects;
 
 import android.net.Uri;
-import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,7 +40,6 @@ public class Movie {
                 .appendPath(size)
                 .appendPath(secondaryUri)
                 .build();
-        Log.e("mytag:uriposter",uri.toString());
         return uri;
     }
 }
