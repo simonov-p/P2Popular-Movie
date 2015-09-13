@@ -1,7 +1,6 @@
-package com.example.petr.udacitypopularmovies.objects;
+package com.example.petr.udacitypopularmovies.api;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.example.petr.udacitypopularmovies.R;
+import com.example.petr.udacitypopularmovies.objects.Movie;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
