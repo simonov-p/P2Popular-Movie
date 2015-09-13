@@ -19,9 +19,10 @@
             android:gravity="center_vertical"
             android:paddingLeft="@dimen/detail_title_text_view_left_padding"
             android:paddingStart="@dimen/detail_title_text_view_left_padding"
-            android:text="title"
+            android:text="@string/default_title"
             android:textColor="@color/white"
             android:textSize="@dimen/detail_title_text_view_text_size"
+            android:maxLines="3"
             />
 
         <LinearLayout
@@ -47,7 +48,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/detail_small_padding"
-                    android:text="2032"
+                    android:text="@string/default_year"
                     android:textSize="@dimen/detail_data_text_view_text_size"/>
 
                 <TextView
@@ -55,15 +56,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/detail_small_padding"
-                    android:text="999 min"
-                    android:textSize="@dimen/detail_duration_text_view_text_size"/>
+                    android:text="@string/default_duration"
+                    android:textSize="@dimen/detail_duration_text_view_text_size"
+                    android:visibility="gone"/>
 
                 <TextView
                     android:id="@+id/detail_vote_average_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/detail_small_padding"
-                    android:text="11"
+                    android:text="@string/default_vote"
                     android:textColor="@color/black"
                     android:textSize="@dimen/detail_vote_text_view_text_size"/>
 
@@ -75,6 +77,7 @@
                     android:padding="@dimen/detail_small_padding"
                     android:text="@string/mark_as_favorite"
                     android:textColor="@color/detail_frg_text"
+                    android:visibility="gone"
                     android:textSize="@dimen/detail_button_text_view_text_size"/>
             </LinearLayout>
         </LinearLayout>

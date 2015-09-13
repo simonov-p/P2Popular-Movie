@@ -7,6 +7,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -35,17 +38,18 @@ import java.util.ArrayList;
  */
 public class GridFragment extends Fragment {
 
-    GridView gridView;
-    ArrayList<Movie>movies = new ArrayList<>();
+    private GridView gridView;
+    private ArrayList<Movie>movies = new ArrayList<>();
     public static MovieAdapter mAdapter;
-    public static String EXTRA = "s";
 
-    public GridFragment() {
-    }
+    private String SORT_BY_VOTE = "vote_average";
+    private String SORT_BY_POPUlARITY = "popularity";
+    private String mCurrentSort = SORT_BY_VOTE;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -53,20 +57,15 @@ public class GridFragment extends Fragment {
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_main, container, false);
 
-        FetchMovieTask fetchMovieTask = new FetchMovieTask();
-        fetchMovieTask.execute();
+        updateMovies();
 
         gridView = (GridView)root.findViewById(R.id.grid_view);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Movie movie = mAdapter.getItem(position);
-                Log.e("mytag2", movie.toString());
-
-                Toast.makeText(getActivity(), movie.title, Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getActivity(),DetailActivity.class);
-                intent.putExtra(GridFragment.EXTRA, position);
+                Intent intent = new Intent(getActivity(), DetailActivity.class);
+                intent.putExtra(Intent.EXTRA_TEXT, position);
                 startActivity(intent);
             }
         });
@@ -74,17 +73,14 @@ public class GridFragment extends Fragment {
         return root;
     }
 
-
-
-    public class FetchMovieTask extends AsyncTask<Void, Void, Void> {
+    public class FetchMovieTask extends AsyncTask<String, Void, Void> {
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
         @Override
-        protected Void doInBackground(Void... params) {
-
-//            if (params.length == 0) {
-//                return null;
-//            }
+        protected Void doInBackground(String... params) {
+            if (params.length == 0) {
+                return null;
+            }
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
             HttpURLConnection urlConnection = null;
@@ -92,8 +88,6 @@ public class GridFragment extends Fragment {
 
             // Will contain the raw JSON response as a string.
             String movieJson = null;
-
-            String format = "json";
 
             try {
                 // Construct the URL for the OpenWeatherMap query
@@ -106,7 +100,7 @@ public class GridFragment extends Fragment {
                 final String API_KEY_PARAM = "api_key";
 
                 //hardcode
-                String sort = "popularity.desc";
+                String sort = params[0] +  ".desc";
                 String api_key = getString(R.string.the_movieDB_API_key);
 
                 Uri builtUri = Uri.parse(MOVIEDB_BASE_URL).buildUpon()
@@ -180,11 +174,37 @@ public class GridFragment extends Fragment {
         }
 
         void parseJson(JSONObject jsonObject) throws JSONException {
+            movies = new ArrayList<>();
             JSONArray array = jsonObject.getJSONArray("results");
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
                 movies.add(new Movie(object));
             }
         }
+    }
+
+    private void updateMovies(){
+        if (mCurrentSort.equals(SORT_BY_VOTE)) {
+            mCurrentSort = SORT_BY_POPUlARITY;
+        } else {
+            mCurrentSort = SORT_BY_VOTE;
+        }
+        FetchMovieTask fetchMovieTask = new FetchMovieTask();
+        fetchMovieTask.execute(mCurrentSort);
+        Toast.makeText(getContext(), "Sort order by " + mCurrentSort, Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.grid_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_resort){
+            updateMovies();
+        }
+        return true;
     }
 }

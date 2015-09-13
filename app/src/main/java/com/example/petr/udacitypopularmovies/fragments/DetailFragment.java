@@ -3,7 +3,6 @@ package com.example.petr.udacitypopularmovies.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,9 +26,8 @@ public class DetailFragment extends Fragment {
         Intent intent = getActivity().getIntent();
 
         if (intent != null) {
-            int position = intent.getIntExtra(GridFragment.EXTRA, -1);
+            int position = intent.getIntExtra(Intent.EXTRA_TEXT, -1);
             Movie movie = GridFragment.mAdapter.getItem(position);
-            Log.e("mytag3", movie.toString());
 
             TextView title = (TextView) rootView.findViewById(R.id.detail_title_text_view);
             ImageView poster = (ImageView) rootView.findViewById(R.id.detail_image_view);
@@ -39,14 +37,12 @@ public class DetailFragment extends Fragment {
             Button buttonFavorite = (Button) rootView.findViewById(R.id.detail_favorite_button);
             TextView overview = (TextView) rootView.findViewById(R.id.detail_overview_text_view);
 
-
             title.setText(movie.title);
             Picasso.with(getActivity()).load(movie.poster_path).into(poster);
             release.setText(Utility.getReleaseYear(movie.release_date));
             duration.setText("no dur");
             vote.setText(String.format(getString(R.string.vote), movie.vote_average));
             overview.setText(movie.overview);
-
         }
 
         return rootView;
