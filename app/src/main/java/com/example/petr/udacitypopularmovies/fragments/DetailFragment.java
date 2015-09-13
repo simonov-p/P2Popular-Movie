@@ -3,7 +3,6 @@ package com.example.petr.udacitypopularmovies.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,14 +16,19 @@ import com.example.petr.udacitypopularmovies.api.FetchMovieTask;
 import com.example.petr.udacitypopularmovies.objects.Movie;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * Created by petr on 10.09.2015.
  */
 public class DetailFragment extends Fragment {
     private Movie mMovie;
+    TextView voteView;
+    TextView durationView;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
@@ -38,49 +42,82 @@ public class DetailFragment extends Fragment {
             TextView title = (TextView) rootView.findViewById(R.id.detail_title_text_view);
             ImageView poster = (ImageView) rootView.findViewById(R.id.detail_image_view);
             TextView release = (TextView) rootView.findViewById(R.id.detail_release_text_view);
-            final TextView duration = (TextView) rootView.findViewById(R.id.detail_duration_text_view);
-            TextView vote = (TextView) rootView.findViewById(R.id.detail_vote_average_text_view);
+            durationView = (TextView) rootView.findViewById(R.id.detail_duration_text_view);
+            voteView = (TextView) rootView.findViewById(R.id.detail_vote_average_text_view);
             Button buttonFavorite = (Button) rootView.findViewById(R.id.detail_favorite_button);
             TextView overview = (TextView) rootView.findViewById(R.id.detail_overview_text_view);
 
-            FetchMovieTask fetchMovieTask = new FetchMovieTask(getContext(), mMovie,
-                    FetchMovieTask.REQUEST_REVIEWS,
-                    new GridFragment.FragmentCallback() {
-                        @Override
-                        public void onTaskDone(JSONObject jsonObject) {
-                            try {
-                                parseJson(jsonObject);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-            fetchMovieTask.execute();
-            FetchMovieTask fetchMovieTask2 = new FetchMovieTask(getContext(), mMovie,
-                    FetchMovieTask.REQUEST_VIDEOS,
-                    new GridFragment.FragmentCallback() {
-                        @Override
-                        public void onTaskDone(JSONObject jsonObject) {
-                            try {
-                                parseJson(jsonObject);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-            fetchMovieTask2.execute();
+            setMoreInfo();
+            setTrailerList();
+            setReviewList();
 
             title.setText(mMovie.title);
             Picasso.with(getActivity()).load(mMovie.poster_path).into(poster);
             release.setText(Utility.getReleaseYear(mMovie.release_date));
-            vote.setText(String.format(getString(R.string.vote), mMovie.vote_average));
             overview.setText(mMovie.overview);
         }
-
         return rootView;
     }
 
-    private void parseJson(JSONObject jsonObject) throws JSONException {
-        Log.e("mytag", jsonObject.toString());
+    private void setMoreInfo() {
+        FetchMovieTask fetchMovieTask2 = new FetchMovieTask(getContext(), mMovie,
+                FetchMovieTask.REQUEST_MORE_INFO,
+                new GridFragment.FragmentCallback() {
+                    @Override
+                    public void onTaskDone(JSONObject jsonObject) {
+                        try {
+                            durationView.setText(String.format(getString(R.string.runtime), jsonObject.getString("runtime")));
+                            voteView.setText(String.format(getString(R.string.vote), jsonObject.getString("vote_average")));
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+        fetchMovieTask2.execute();
+    }
+
+    private void  setReviewList() {
+        FetchMovieTask fetchMovieTask = new FetchMovieTask(getContext(), mMovie,
+                FetchMovieTask.REQUEST_REVIEWS,
+                new GridFragment.FragmentCallback() {
+                    @Override
+                    public void onTaskDone(JSONObject jsonObject) {
+                        try {
+                            JSONArray jsonArray = jsonObject.getJSONArray("results");
+                            ArrayList<String> author = new ArrayList<>();
+                            ArrayList<String> content = new ArrayList<>();
+                            for (int i = 0; i < jsonArray.length(); i ++) {
+                                author.add(jsonArray.getJSONObject(i).getString("author"));
+                                content.add(jsonArray.getJSONObject(i).getString("content"));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+        fetchMovieTask.execute();
+    }
+
+    private void setTrailerList() {
+        FetchMovieTask fetchMovieTask = new FetchMovieTask(getContext(), mMovie,
+                FetchMovieTask.REQUEST_VIDEOS,
+                new GridFragment.FragmentCallback() {
+                    @Override
+                    public void onTaskDone(JSONObject jsonObject) {
+                        try {
+                            JSONArray jsonArray = jsonObject.getJSONArray("results");
+                            ArrayList<String> keys = new ArrayList<>();
+                            ArrayList<String> names = new ArrayList<>();
+                            for (int i = 0; i < jsonArray.length(); i ++) {
+                                keys.add(jsonArray.getJSONObject(i).getString("key"));
+                                names.add(jsonArray.getJSONObject(i).getString("name"));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+        fetchMovieTask.execute();
     }
 }

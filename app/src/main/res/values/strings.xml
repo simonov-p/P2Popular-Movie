@@ -7,6 +7,7 @@
 
     <string name="mark_as_favorite">mark as\nfavorite</string>
     <string name="vote">%1$s/10</string>
+    <string name="runtime">%1$s min</string>
     <string name="action_resort">Change sort order</string>
     <string name="default_vote">11</string>
     <string name="default_duration">999 min</string>
