@@ -5,4 +5,24 @@
 
     <!-- poster size -->
     <dimen name="poster_height">270dp</dimen>
+
+    <!-- Detail fragment. -->
+    <dimen name="detail_poster_width">143dp</dimen>
+    <dimen name="detail_poster_height">214dp</dimen>
+    <dimen name="detail_poster_margin">31dp</dimen>
+
+    <dimen name="detail_overview_left_margin">19dp</dimen>
+
+    <dimen name="detail_title_text_view_height">157dp</dimen>
+    <dimen name="detail_title_text_view_left_padding">33dp</dimen>
+    <dimen name="detail_title_text_view_bottom_margin">10dp</dimen>
+    <dimen name="detail_title_text_view_text_size">42sp</dimen>
+
+    <dimen name="detail_small_padding">7dp</dimen>
+
+    <dimen name="detail_data_text_view_text_size">22sp</dimen>
+    <dimen name="detail_duration_text_view_text_size">18sp</dimen>
+    <dimen name="detail_vote_text_view_text_size">11sp</dimen>
+    <dimen name="detail_button_text_view_text_size">16sp</dimen>
+    <dimen name="detail_overview_text_view_text_size">14sp</dimen>
 </resources>

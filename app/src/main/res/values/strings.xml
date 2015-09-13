@@ -2,5 +2,9 @@
     <string name="app_name">Udacity Popular Movies</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+
     <string name="the_movieDB_API_key">faabcad1fcaddf30f757c38d94d44bc0</string>
+
+    <string name="mark_as_favorite">mark as\nfavorite</string>
+    <string name="vote">%1$s/10</string>
 </resources>
