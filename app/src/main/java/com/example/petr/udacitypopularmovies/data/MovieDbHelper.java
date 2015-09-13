@@ -1,8 +1,15 @@
 package com.example.petr.udacitypopularmovies.data;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import com.example.petr.udacitypopularmovies.fragments.GridFragment;
+import com.example.petr.udacitypopularmovies.objects.Movie;
+
+import java.util.ArrayList;
 
 /**
  * Created by petr on 10.09.2015.
@@ -38,7 +45,6 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 MovieContract.MovieEntry.COLUMN_POSTER_URL + " TEXT NOT NULL" + ");";
 
         sqLiteDatabase.execSQL(SQL_CREATE_MOVIE_TABLE);
-
     }
 
     @Override
@@ -52,4 +58,37 @@ public class MovieDbHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + MovieContract.MovieEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
-}
+
+    public static ArrayList<Movie> getMovies(String selected) {
+        ArrayList<Movie>  movies = new ArrayList<>();
+
+            // 1. build the query
+            String query = "SELECT  * FROM " + MovieContract.MovieEntry.TABLE_NAME + " ORDER BY " + selected  + " DESC";
+
+            // 2. get reference to writable DB
+            SQLiteDatabase db = GridFragment.mMovieDbHelper;
+            Cursor cursor = db.rawQuery(query, null);
+
+            // 3. go over each row, build book and add it to list
+            Movie movie = null;
+            if (cursor.moveToFirst()) {
+                do {
+                    int db_id = Integer.parseInt(cursor.getString(0));
+                    String title = cursor.getString(1);
+                    String overview = cursor.getString(2);
+                    String release_date = cursor.getString(3);
+                    double popularity = cursor.getDouble(4);
+                    int vote_average = cursor.getInt(5);
+                    int vote_count = cursor.getInt(6);
+                    String poster_path = cursor.getString(7);
+                    movie = new Movie(db_id,title,overview,release_date,popularity,vote_average,vote_count,poster_path);
+                    movies.add(movie);
+                } while (cursor.moveToNext());
+            }
+
+            Log.d("getAllMovies", movies.toString());
+
+            return movies;
+        }
+    }
+

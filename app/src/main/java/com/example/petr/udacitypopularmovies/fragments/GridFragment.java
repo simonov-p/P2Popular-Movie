@@ -1,6 +1,8 @@
 package com.example.petr.udacitypopularmovies.fragments;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,10 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import com.example.petr.udacitypopularmovies.DetailActivity;
 import com.example.petr.udacitypopularmovies.R;
+import com.example.petr.udacitypopularmovies.data.MovieContract;
+import com.example.petr.udacitypopularmovies.data.MovieDbHelper;
 import com.example.petr.udacitypopularmovies.objects.Movie;
 import com.example.petr.udacitypopularmovies.objects.MovieAdapter;
 
@@ -36,9 +39,13 @@ import java.util.ArrayList;
 public class GridFragment extends Fragment {
 
     GridView gridView;
-    ArrayList<Movie>movies = new ArrayList<>();
+    public static ArrayList<Movie>movies = new ArrayList<>();
     public static MovieAdapter mAdapter;
     public static String EXTRA = "s";
+    public static SQLiteDatabase mMovieDbHelper;
+    public static String SORT_BY_POPULARITY = "popularity.desc";
+    public static String SORT_BY_VOTE = "vote_average.desc";
+
 
     public GridFragment() {
     }
@@ -54,7 +61,7 @@ public class GridFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_main, container, false);
 
         FetchMovieTask fetchMovieTask = new FetchMovieTask();
-        fetchMovieTask.execute();
+        fetchMovieTask.execute(SORT_BY_POPULARITY);
 
         gridView = (GridView)root.findViewById(R.id.grid_view);
 
@@ -64,7 +71,6 @@ public class GridFragment extends Fragment {
                 Movie movie = mAdapter.getItem(position);
                 Log.e("mytag2", movie.toString());
 
-                Toast.makeText(getActivity(), movie.title, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getActivity(),DetailActivity.class);
                 intent.putExtra(GridFragment.EXTRA, position);
                 startActivity(intent);
@@ -74,13 +80,11 @@ public class GridFragment extends Fragment {
         return root;
     }
 
-
-
-    public class FetchMovieTask extends AsyncTask<Void, Void, Void> {
+    public class FetchMovieTask extends AsyncTask<String, Void, Void> {
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Void doInBackground(String... params) {
 
 //            if (params.length == 0) {
 //                return null;
@@ -93,8 +97,6 @@ public class GridFragment extends Fragment {
             // Will contain the raw JSON response as a string.
             String movieJson = null;
 
-            String format = "json";
-
             try {
                 // Construct the URL for the OpenWeatherMap query
                 // Possible parameters are avaiable at OWM's forecast API page, at
@@ -106,7 +108,8 @@ public class GridFragment extends Fragment {
                 final String API_KEY_PARAM = "api_key";
 
                 //hardcode
-                String sort = "popularity.desc";
+//                String sort = "popularity.desc";
+                String sort = params[0];
                 String api_key = getString(R.string.the_movieDB_API_key);
 
                 Uri builtUri = Uri.parse(MOVIEDB_BASE_URL).buildUpon()
@@ -179,11 +182,16 @@ public class GridFragment extends Fragment {
             gridView.setAdapter(mAdapter);
         }
 
-        void parseJson(JSONObject jsonObject) throws JSONException {
+        private void parseJson(JSONObject jsonObject) throws JSONException {
+            mMovieDbHelper = new MovieDbHelper(getActivity()).getWritableDatabase();
             JSONArray array = jsonObject.getJSONArray("results");
             for (int i = 0; i < array.length(); i++) {
                 JSONObject object = array.getJSONObject(i);
-                movies.add(new Movie(object));
+                Movie movie = new Movie(object);
+                movies.add(movie);
+
+                ContentValues contentValues = movie.putMovieToCV();
+                mMovieDbHelper.insert(MovieContract.MovieEntry.TABLE_NAME, null, contentValues);
             }
         }
     }

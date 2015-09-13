@@ -1,10 +1,13 @@
 package com.example.petr.udacitypopularmovies;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.example.petr.udacitypopularmovies.data.MovieContract;
+import com.example.petr.udacitypopularmovies.data.MovieDbHelper;
 import com.example.petr.udacitypopularmovies.fragments.GridFragment;
 
 public class MainActivity extends AppCompatActivity {
@@ -37,6 +40,19 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        } else if (id == R.id.action_resort) {
+            Toast.makeText(this, "resort", Toast.LENGTH_SHORT).show();
+            GridFragment.movies = MovieDbHelper.getMovies(MovieContract.MovieEntry.COLUMN_POPULARITY);
+            GridFragment.mAdapter.notifyDataSetChanged();
+            return true;
+        } else if (id == R.id.action_resort2) {
+            Toast.makeText(this, "resort", Toast.LENGTH_SHORT).show();
+            GridFragment.FetchMovieTask fetchMovieTask = new GridFragment.FetchMovieTask();
+            fetchMovieTask.execute(GridFragment.SORT_BY_VOTE);
+            GridFragment.movies = MovieDbHelper.getMovies(MovieContract.MovieEntry.COLUMN_VOTE_COUNT);
+
+            GridFragment.mAdapter.notifyDataSetChanged();
             return true;
         }
 
