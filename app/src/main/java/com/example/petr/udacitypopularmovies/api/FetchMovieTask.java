@@ -33,8 +33,11 @@ public class FetchMovieTask extends AsyncTask<Void, String, String> {
     private Uri mBuiltUri;
     final String SORT_BY_PARAM = "sort_by";
     final String API_KEY_PARAM = "api_key";
+    final String VOTE_COUNT_PARAM = "vote_count.gte";
     String api_key = "faabcad1fcaddf30f757c38d94d44bc0";
 //    String api_key = mContext.getString(R.string.the_movieDB_API_key);
+    public static final String REQUEST_VIDEOS = "videos";
+    public static final String REQUEST_REVIEWS = "reviews";
 
     private ArrayList<Movie> mMovies = new ArrayList<>();
 
@@ -45,18 +48,20 @@ public class FetchMovieTask extends AsyncTask<Void, String, String> {
         mFragmentCallback = fragmentCallback;
         baseURL = MOVIE_API_BASE_URL + "/discover/movie?";
 
-        //hardcode
         String sort = args + ".desc";
+        String voteCountMinParam = "1000";
 
         mBuiltUri = Uri.parse(baseURL).buildUpon()
                 .appendQueryParameter(SORT_BY_PARAM, sort)
                 .appendQueryParameter(API_KEY_PARAM, api_key)
+                .appendQueryParameter(VOTE_COUNT_PARAM, voteCountMinParam)
                 .build();
     }
-    public FetchMovieTask(Context context, Movie movie, String movieItem) {
+    public FetchMovieTask(Context context, Movie movie, String movieItem, GridFragment.FragmentCallback fragmentCallback) {
 
         mContext = context;
         baseURL = MOVIE_API_BASE_URL + "/movie/" + movie.db_id + "/" + movieItem  + "?";
+        mFragmentCallback = fragmentCallback;
 
         mBuiltUri = Uri.parse(baseURL).buildUpon()
                 .appendQueryParameter(API_KEY_PARAM, api_key)
