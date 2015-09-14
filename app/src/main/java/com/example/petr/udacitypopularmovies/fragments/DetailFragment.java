@@ -55,7 +55,11 @@ public class DetailFragment extends Fragment {
             setReviewList();
 
             title.setText(mMovie.title);
-            Picasso.with(getActivity()).load(mMovie.poster_path).into(poster);
+            Picasso.with(getActivity()).
+                    load(mMovie.poster_path).
+                    placeholder(R.drawable.placeholder).
+                    error(R.drawable.placeholder).
+                    into(poster);
             release.setText(Utility.getReleaseYear(mMovie.release_date));
             overview.setText(mMovie.overview);
         }
