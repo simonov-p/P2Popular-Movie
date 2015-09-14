@@ -26,12 +26,15 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * A placeholder fragment containing a simple view.
  */
 public class GridFragment extends Fragment {
 
-    private GridView gridView;
+    @Bind(R.id.grid_view)GridView gridView;
     private ArrayList<Movie> mMovies = new ArrayList<>();
     public static MovieAdapter mAdapter;
 
@@ -50,9 +53,9 @@ public class GridFragment extends Fragment {
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_main, container, false);
 
-        updateMovies();
+        ButterKnife.bind(this,root);
 
-        gridView = (GridView)root.findViewById(R.id.grid_view);
+        updateMovies();
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

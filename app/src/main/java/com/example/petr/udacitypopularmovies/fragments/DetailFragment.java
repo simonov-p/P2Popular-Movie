@@ -22,30 +22,33 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * Created by petr on 10.09.2015.
  */
 public class DetailFragment extends Fragment {
     private Movie mMovie;
-    TextView voteView;
-    TextView durationView;
+
+    @Bind(R.id.detail_duration_text_view) TextView durationView;
+    @Bind(R.id.detail_vote_average_text_view) TextView voteView;
+    @Bind(R.id.detail_title_text_view) TextView title;
+    @Bind(R.id.detail_image_view) ImageView poster;
+    @Bind(R.id.detail_release_text_view) TextView release;
+    @Bind(R.id.detail_overview_text_view) TextView overview;
+    @Bind(R.id.detail_favorite_button) Button buttonFavorite;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
+        ButterKnife.bind(this,rootView);
         Intent intent = getActivity().getIntent();
 
         if (intent != null) {
             int position = intent.getIntExtra(Intent.EXTRA_TEXT, -1);
             mMovie = GridFragment.mAdapter.getItem(position);
-
-            TextView title = (TextView) rootView.findViewById(R.id.detail_title_text_view);
-            ImageView poster = (ImageView) rootView.findViewById(R.id.detail_image_view);
-            TextView release = (TextView) rootView.findViewById(R.id.detail_release_text_view);
-            durationView = (TextView) rootView.findViewById(R.id.detail_duration_text_view);
-            voteView = (TextView) rootView.findViewById(R.id.detail_vote_average_text_view);
-            Button buttonFavorite = (Button) rootView.findViewById(R.id.detail_favorite_button);
-            TextView overview = (TextView) rootView.findViewById(R.id.detail_overview_text_view);
 
             setMoreInfo();
             setTrailerList();
