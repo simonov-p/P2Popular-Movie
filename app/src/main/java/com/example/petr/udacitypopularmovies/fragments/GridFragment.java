@@ -73,15 +73,6 @@ public class GridFragment extends Fragment {
         return root;
     }
 
-    private ArrayList<Movie> parseJson(String result) {
-//        JsonObject gobject1= (JsonObject) new JsonParser().parse(jsonObject.toString());
-        JsonObject object = (JsonObject) new JsonParser().parse(result);
-        Movies movies2 = new Gson().fromJson(object, Movies.class);
-
-        ArrayList<Movie> movies = (ArrayList<Movie>) movies2.results;
-        return movies;
-    }
-
     private void updateMovies() {
         if (mCurrentSort.equals(SORT_BY_VOTE)) {
             mCurrentSort = SORT_BY_POPULARITY;
@@ -92,7 +83,8 @@ public class GridFragment extends Fragment {
         FetchMovieTask fetchMovieTask = new FetchMovieTask(getContext(), mCurrentSort, new FragmentCallback() {
             @Override
             public void onTaskDone(String result) {
-                mMovies = parseJson(result);
+                JsonObject object = (JsonObject) new JsonParser().parse(result);
+                mMovies = (ArrayList<Movie>) new Gson().fromJson(object, Movies.class).results;
                 mAdapter = new MovieAdapter(getContext(), mMovies);
                 gridView.setAdapter(mAdapter);
             }
