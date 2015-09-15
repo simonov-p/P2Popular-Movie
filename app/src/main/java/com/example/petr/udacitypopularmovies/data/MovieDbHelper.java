@@ -3,13 +3,14 @@ package com.example.petr.udacitypopularmovies.data;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * Created by petr on 10.09.2015.
  */
 public class MovieDbHelper extends SQLiteOpenHelper {
 
-    static final String DATABASE_NAME = "movie.db";
+    static final String DATABASE_NAME = "movie";
     // If you change the database schema, you must increment the database version.
     private static final int DATABASE_VERSION = 1;
 
@@ -19,6 +20,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
+
         final String SQL_CREATE_MOVIE_TABLE = "CREATE TABLE " + MovieContract.MovieEntry.TABLE_NAME + " (" +
                 // Why AutoIncrement here, and not above?
                 // Unique keys will be auto-generated in either case.  But for weather
@@ -36,6 +38,8 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE + " INTEGER NOT NULL, " +
                 MovieContract.MovieEntry.COLUMN_VOTE_COUNT + " INTEGER NOT NULL, " +
                 MovieContract.MovieEntry.COLUMN_POSTER_URL + " TEXT NOT NULL" + ");";
+
+        Log.e("mytag:crate table:", SQL_CREATE_MOVIE_TABLE);
 
         sqLiteDatabase.execSQL(SQL_CREATE_MOVIE_TABLE);
     }

@@ -9,7 +9,7 @@ import android.text.format.Time;
 /**
  * Created by petr on 10.09.2015.
  */
-public class MovieContract {
+public class MovieContract implements BaseColumns {
 
     public static final String CONTENT_AUTHORITY = "com.example.petr.udacitypopularmovies";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);

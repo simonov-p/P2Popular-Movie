@@ -1,8 +1,11 @@
 package com.example.petr.udacitypopularmovies.fragments;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +16,8 @@ import android.widget.TextView;
 import com.example.petr.udacitypopularmovies.R;
 import com.example.petr.udacitypopularmovies.Utility;
 import com.example.petr.udacitypopularmovies.api.FetchMovieTask;
+import com.example.petr.udacitypopularmovies.data.MovieContract;
+import com.example.petr.udacitypopularmovies.data.MovieDbHelper;
 import com.example.petr.udacitypopularmovies.objects.Movie;
 import com.squareup.picasso.Picasso;
 
@@ -62,9 +67,18 @@ public class DetailFragment extends Fragment {
                     into(poster);
             release.setText(Utility.getReleaseYear(mMovie.release_date));
             overview.setText(mMovie.overview);
+            buttonFavorite.setOnClickListener(markAsFavoriteListener);
         }
         return rootView;
     }
+
+    private View.OnClickListener markAsFavoriteListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            SQLiteDatabase db = new MovieDbHelper(getContext()).getReadableDatabase();
+
+        }
+    };
 
     private void setMoreInfo() {
         FetchMovieTask fetchMovieTask2 = new FetchMovieTask(getContext(), mMovie,
