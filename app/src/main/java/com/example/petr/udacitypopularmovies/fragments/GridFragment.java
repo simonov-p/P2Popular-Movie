@@ -19,12 +19,16 @@ import com.example.petr.udacitypopularmovies.R;
 import com.example.petr.udacitypopularmovies.api.FetchMovieTask;
 import com.example.petr.udacitypopularmovies.api.MovieAdapter;
 import com.example.petr.udacitypopularmovies.objects.Movie;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -37,6 +41,9 @@ public class GridFragment extends Fragment {
     @Bind(R.id.grid_view)GridView gridView;
     private ArrayList<Movie> mMovies = new ArrayList<>();
     public static MovieAdapter mAdapter;
+    private static final String ENDPOINT = "http://api.themoviedb.org/3";
+
+    private List<Movie> results;
 
     private String SORT_BY_VOTE = "vote_average";
     private String SORT_BY_POPULARITY = "popularity";
@@ -74,7 +81,14 @@ public class GridFragment extends Fragment {
         ArrayList<Movie> movies = new ArrayList<>();
         for (int i = 0; i < array.length(); i++) {
             JSONObject object = array.getJSONObject(i);
-            movies.add(new Movie(object));
+            JsonObject gobject= (JsonObject) new JsonParser().parse(object.toString());
+            Gson gson = new Gson();
+            Movie m = gson.fromJson(gobject,Movie.class);
+            m.poster_path = m.getPosterUri(m.poster_path);
+
+            Log.e("mytag,gobject", gobject.toString());
+            Log.e("mytag,m", m.toString());
+            movies.add(m);
         }
         return movies;
     }
@@ -85,6 +99,23 @@ public class GridFragment extends Fragment {
         } else {
             mCurrentSort = SORT_BY_VOTE;
         }
+
+
+
+
+
+
+//        String url = "http://api.themoviedb.org/3";
+//
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .baseUrl(url)
+//                .build();
+//
+//        MoviesAPI api = retrofit.create(MoviesAPI.class);
+//
+//        Call<List<Movie>> repo = api.listMovie("faabcad1fcaddf30f757c38d94d44bc0");
+//
+//        Log.e("mytag", results.toString());
         FetchMovieTask fetchMovieTask = new FetchMovieTask(getContext(), mCurrentSort, new FragmentCallback() {
             @Override
             public void onTaskDone(JSONObject jsonObject) {

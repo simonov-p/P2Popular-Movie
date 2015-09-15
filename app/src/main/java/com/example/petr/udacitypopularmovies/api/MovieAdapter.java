@@ -41,7 +41,7 @@ public class MovieAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return movies.get(position).db_id;
+        return movies.get(position).id;
     }
 
     @Override

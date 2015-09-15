@@ -61,7 +61,7 @@ public class FetchMovieTask extends AsyncTask<Void, String, String> {
     public FetchMovieTask(Context context, Movie movie, String movieItem, GridFragment.FragmentCallback fragmentCallback) {
 
         mContext = context;
-        baseURL = MOVIE_API_BASE_URL + "/movie/" + movie.db_id + movieItem  + "?";
+        baseURL = MOVIE_API_BASE_URL + "/movie/" + movie.id + movieItem  + "?";
         mFragmentCallback = fragmentCallback;
 
         mBuiltUri = Uri.parse(baseURL).buildUpon()
