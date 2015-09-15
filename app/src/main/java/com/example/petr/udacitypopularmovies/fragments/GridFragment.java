@@ -104,16 +104,6 @@ public class GridFragment extends Fragment {
             }
         });
 
-//        FetchMovieTask fetchMovieTask = new FetchMovieTask(getContext(), mCurrentSort, new FragmentCallback() {
-//            @Override
-//            public void onTaskDone(String result) {
-//                JsonObject object = (JsonObject) new JsonParser().parse(result);
-//                mMovies = (ArrayList<Movie>) new Gson().fromJson(object, Movies.class).results;
-//                mAdapter = new MovieAdapter(getContext(), mMovies);
-//                gridView.setAdapter(mAdapter);
-//            }
-//        });
-//        fetchMovieTask.execute();
         Toast.makeText(getContext(), "Sort order by " + mCurrentSort, Toast.LENGTH_SHORT).show();
         printMovies(mMovies);
     }
