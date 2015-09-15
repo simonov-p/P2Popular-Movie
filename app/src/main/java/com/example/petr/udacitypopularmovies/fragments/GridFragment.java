@@ -16,26 +16,29 @@ import android.widget.Toast;
 
 import com.example.petr.udacitypopularmovies.DetailActivity;
 import com.example.petr.udacitypopularmovies.R;
-import com.example.petr.udacitypopularmovies.api.FetchMovieTask;
 import com.example.petr.udacitypopularmovies.api.MovieAdapter;
+import com.example.petr.udacitypopularmovies.api.MoviesAPI;
 import com.example.petr.udacitypopularmovies.objects.Movie;
 import com.example.petr.udacitypopularmovies.objects.Movies;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import retrofit.Callback;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class GridFragment extends Fragment {
 
-    private static final String ENDPOINT = "http://api.themoviedb.org/3";
+    private static final String ENDPOINT = "http://api.themoviedb.org";
+    String api_key = "faabcad1fcaddf30f757c38d94d44bc0";
+
     public static MovieAdapter mAdapter;
     @Bind(R.id.grid_view)
     GridView gridView;
@@ -80,16 +83,37 @@ public class GridFragment extends Fragment {
             mCurrentSort = SORT_BY_VOTE;
         }
 
-        FetchMovieTask fetchMovieTask = new FetchMovieTask(getContext(), mCurrentSort, new FragmentCallback() {
+        final RestAdapter adapter = new RestAdapter.Builder()
+                .setEndpoint(ENDPOINT)
+                .build();
+
+        MoviesAPI moviesAPI = adapter.create(MoviesAPI.class);
+
+        moviesAPI.getMovies(new Callback<Movies>() {
             @Override
-            public void onTaskDone(String result) {
-                JsonObject object = (JsonObject) new JsonParser().parse(result);
-                mMovies = (ArrayList<Movie>) new Gson().fromJson(object, Movies.class).results;
+            public void success(Movies movies, Response response) {
+                mMovies = (ArrayList<Movie>) movies.results;
                 mAdapter = new MovieAdapter(getContext(), mMovies);
                 gridView.setAdapter(mAdapter);
             }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Toast.makeText(getContext(), "Что-то пошло не так", Toast.LENGTH_SHORT).show();
+                Log.e("mytag", error.toString());
+            }
         });
-        fetchMovieTask.execute();
+
+//        FetchMovieTask fetchMovieTask = new FetchMovieTask(getContext(), mCurrentSort, new FragmentCallback() {
+//            @Override
+//            public void onTaskDone(String result) {
+//                JsonObject object = (JsonObject) new JsonParser().parse(result);
+//                mMovies = (ArrayList<Movie>) new Gson().fromJson(object, Movies.class).results;
+//                mAdapter = new MovieAdapter(getContext(), mMovies);
+//                gridView.setAdapter(mAdapter);
+//            }
+//        });
+//        fetchMovieTask.execute();
         Toast.makeText(getContext(), "Sort order by " + mCurrentSort, Toast.LENGTH_SHORT).show();
         printMovies(mMovies);
     }
