@@ -3,6 +3,7 @@ package com.example.petr.udacitypopularmovies.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -55,9 +56,15 @@ public class DetailFragment extends Fragment {
             setReviewList();
 
             title.setText(mMovie.title);
-            Picasso.with(getActivity()).load(mMovie.poster_path).into(poster);
+            Picasso.with(getActivity()).load(mMovie.getPosterUri()).into(poster);
             release.setText(Utility.getReleaseYear(mMovie.release_date));
             overview.setText(mMovie.overview);
+            buttonFavorite.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e("mytag,button:", mMovie.toString());
+                }
+            });
         }
         return rootView;
     }
@@ -67,9 +74,12 @@ public class DetailFragment extends Fragment {
                 FetchMovieTask.REQUEST_MORE_INFO,
                 new GridFragment.FragmentCallback() {
                     @Override
-                    public void onTaskDone(JSONObject jsonObject) {
+                    public void onTaskDone(String result ) {
                         try {
-                            durationView.setText(String.format(getString(R.string.runtime), jsonObject.getString("runtime")));
+                            JSONObject jsonObject = new JSONObject(result);
+                            mMovie.duration = Integer.parseInt(jsonObject.getString("runtime"));
+
+                            durationView.setText(String.format(getString(R.string.runtime), mMovie.duration));
                             voteView.setText(String.format(getString(R.string.vote), jsonObject.getString("vote_average")));
 
                         } catch (JSONException e) {
@@ -85,14 +95,15 @@ public class DetailFragment extends Fragment {
                 FetchMovieTask.REQUEST_REVIEWS,
                 new GridFragment.FragmentCallback() {
                     @Override
-                    public void onTaskDone(JSONObject jsonObject) {
+                    public void onTaskDone(String result) {
                         try {
+                            JSONObject jsonObject = new JSONObject(result);
                             JSONArray jsonArray = jsonObject.getJSONArray("results");
-                            ArrayList<String> author = new ArrayList<>();
-                            ArrayList<String> content = new ArrayList<>();
+                            mMovie.reviews = new HashMap<>();
                             for (int i = 0; i < jsonArray.length(); i ++) {
-                                author.add(jsonArray.getJSONObject(i).getString("author"));
-                                content.add(jsonArray.getJSONObject(i).getString("content"));
+                                String author = jsonArray.getJSONObject(i).getString("author");
+                                String content = jsonArray.getJSONObject(i).getString("content");
+                                mMovie.reviews.put(author,content);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -107,14 +118,15 @@ public class DetailFragment extends Fragment {
                 FetchMovieTask.REQUEST_VIDEOS,
                 new GridFragment.FragmentCallback() {
                     @Override
-                    public void onTaskDone(JSONObject jsonObject) {
+                    public void onTaskDone(String result) {
                         try {
+                            JSONObject jsonObject = new JSONObject(result);
                             JSONArray jsonArray = jsonObject.getJSONArray("results");
-                            ArrayList<String> keys = new ArrayList<>();
-                            ArrayList<String> names = new ArrayList<>();
+                            mMovie.trailers = new HashMap<>();
                             for (int i = 0; i < jsonArray.length(); i ++) {
-                                keys.add(jsonArray.getJSONObject(i).getString("key"));
-                                names.add(jsonArray.getJSONObject(i).getString("name"));
+                                String key = jsonArray.getJSONObject(i).getString("key");
+                                String name = jsonArray.getJSONObject(i).getString("name");
+                                mMovie.trailers.put(key, name);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();

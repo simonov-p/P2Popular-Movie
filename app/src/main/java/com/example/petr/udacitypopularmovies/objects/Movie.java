@@ -1,10 +1,13 @@
 package com.example.petr.udacitypopularmovies.objects;
 
 import android.content.ContentValues;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.example.petr.udacitypopularmovies.data.MovieContract;
+
+import java.util.Map;
 
 /**
  * Created by petr on 09.09.2015.
@@ -20,6 +23,11 @@ public class Movie implements Parcelable {
     public String release_date;
     public double popularity;
     public int id;
+    public int duration;
+
+    public Map<String,String> trailers;
+    public Map<String,String> reviews;
+
 
 
 //    public Movie (JSONObject object) throws JSONException {
@@ -48,15 +56,14 @@ public class Movie implements Parcelable {
 //        this.id = db_id;
 //    }
 
-    public String getPosterUri(String secondaryUri){
+    public Uri getPosterUri(){
         String POSTER_BASE_URI = "http://image.tmdb.org/t/p/";
         String size = "w500";
-//        Uri uri = Uri.parse(POSTER_BASE_URI).buildUpon()
-//                .appendPath(size)
-//                .appendPath(secondaryUri)
-//                .build();
-//        return uri.toString();
-        return POSTER_BASE_URI + size + secondaryUri;
+        Uri uri = Uri.parse(POSTER_BASE_URI).buildUpon()
+                .appendPath(size)
+                .appendPath(this.poster_path.substring(1))
+                .build();
+        return uri;
     }
 
     private int mData;
@@ -94,6 +101,9 @@ public class Movie implements Parcelable {
                 ", poster_path=" + poster_path +
                 ", release_date='" + release_date + '\'' +
                 ", db_id=" + id +
+                ", duration=" + duration +
+                ", trailers=" + trailers +
+                ", reviews=" + reviews +
                 ", overview='" + overview + '\'' +
                 '}';
     }

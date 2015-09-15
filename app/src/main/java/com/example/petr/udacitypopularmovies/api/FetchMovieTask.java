@@ -8,9 +8,6 @@ import android.util.Log;
 import com.example.petr.udacitypopularmovies.fragments.GridFragment;
 import com.example.petr.udacitypopularmovies.objects.Movie;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -144,14 +141,7 @@ public class FetchMovieTask extends AsyncTask<Void, String, String> {
 
     @Override
     protected void onPostExecute(String aVoid) {
-        JSONObject jsonObject = null;
-        try {
-            jsonObject = new JSONObject(aVoid);
-        } catch (JSONException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
-            e.printStackTrace();
-        }
-        mFragmentCallback.onTaskDone(jsonObject);
+        mFragmentCallback.onTaskDone(aVoid);
     }
 }
 
