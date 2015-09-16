@@ -89,12 +89,15 @@ public class GridFragment extends Fragment {
 
         MoviesAPI moviesAPI = adapter.create(MoviesAPI.class);
 
-        moviesAPI.getMovies(new Callback<Movies>() {
+        moviesAPI.getMovies(mCurrentSort + ".desc", api_key, "1000",
+                new Callback<Movies>() {
             @Override
             public void success(Movies movies, Response response) {
                 mMovies = (ArrayList<Movie>) movies.results;
                 mAdapter = new MovieAdapter(getContext(), mMovies);
                 gridView.setAdapter(mAdapter);
+                Log.e("mytag:getUrl", response.getUrl());
+
             }
 
             @Override
