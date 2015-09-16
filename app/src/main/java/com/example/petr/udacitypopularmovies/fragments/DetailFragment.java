@@ -10,21 +10,20 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.petr.udacitypopularmovies.R;
 import com.example.petr.udacitypopularmovies.Utility;
-import com.example.petr.udacitypopularmovies.api.FetchMovieTask;
+import com.example.petr.udacitypopularmovies.api.MoviesAPI;
 import com.example.petr.udacitypopularmovies.objects.Movie;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import retrofit.Callback;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Created by petr on 10.09.2015.
@@ -52,13 +51,14 @@ public class DetailFragment extends Fragment {
             mMovie = GridFragment.mAdapter.getItem(position);
 
             setMoreInfo();
-            setTrailerList();
-            setReviewList();
+//            setTrailerList();
+//            setReviewList();
 
             title.setText(mMovie.title);
             Picasso.with(getActivity()).load(mMovie.getPosterUri()).into(poster);
             release.setText(Utility.getReleaseYear(mMovie.release_date));
             overview.setText(mMovie.overview);
+            voteView.setText(String.format(getString(R.string.vote), mMovie.vote_average));
             buttonFavorite.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -70,69 +70,71 @@ public class DetailFragment extends Fragment {
     }
 
     private void setMoreInfo() {
-        FetchMovieTask fetchMovieTask2 = new FetchMovieTask(getContext(), mMovie,
-                FetchMovieTask.REQUEST_MORE_INFO,
-                new GridFragment.FragmentCallback() {
+        final RestAdapter adapter = new RestAdapter.Builder()
+                .setEndpoint(getString(R.string.the_movieDB_base_url))
+                .build();
+
+        MoviesAPI moviesAPI = adapter.create(MoviesAPI.class);
+
+        moviesAPI.getMovieMoreInfo(mMovie.id,
+                getString(R.string.the_movieDB_API_key),
+                new Callback<Movie>() {
                     @Override
-                    public void onTaskDone(String result ) {
-                        try {
-                            JSONObject jsonObject = new JSONObject(result);
-                            mMovie.duration = Integer.parseInt(jsonObject.getString("runtime"));
+                    public void success(Movie movie, Response response) {
+                        mMovie.runtime = movie.runtime;
+                        durationView.setText(String.format(getString(R.string.runtime), mMovie.runtime));
+                    }
 
-                            durationView.setText(String.format(getString(R.string.runtime), mMovie.duration));
-                            voteView.setText(String.format(getString(R.string.vote), jsonObject.getString("vote_average")));
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                    @Override
+                    public void failure(RetrofitError error) {
+                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
-        fetchMovieTask2.execute();
     }
 
-    private void  setReviewList() {
-        FetchMovieTask fetchMovieTask = new FetchMovieTask(getContext(), mMovie,
-                FetchMovieTask.REQUEST_REVIEWS,
-                new GridFragment.FragmentCallback() {
-                    @Override
-                    public void onTaskDone(String result) {
-                        try {
-                            JSONObject jsonObject = new JSONObject(result);
-                            JSONArray jsonArray = jsonObject.getJSONArray("results");
-                            mMovie.reviews = new HashMap<>();
-                            for (int i = 0; i < jsonArray.length(); i ++) {
-                                String author = jsonArray.getJSONObject(i).getString("author");
-                                String content = jsonArray.getJSONObject(i).getString("content");
-                                mMovie.reviews.put(author,content);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-        fetchMovieTask.execute();
-    }
-
-    private void setTrailerList() {
-        FetchMovieTask fetchMovieTask = new FetchMovieTask(getContext(), mMovie,
-                FetchMovieTask.REQUEST_VIDEOS,
-                new GridFragment.FragmentCallback() {
-                    @Override
-                    public void onTaskDone(String result) {
-                        try {
-                            JSONObject jsonObject = new JSONObject(result);
-                            JSONArray jsonArray = jsonObject.getJSONArray("results");
-                            mMovie.trailers = new HashMap<>();
-                            for (int i = 0; i < jsonArray.length(); i ++) {
-                                String key = jsonArray.getJSONObject(i).getString("key");
-                                String name = jsonArray.getJSONObject(i).getString("name");
-                                mMovie.trailers.put(key, name);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-        fetchMovieTask.execute();
-    }
+//    private void  setReviewList() {
+//        FetchMovieTask fetchMovieTask = new FetchMovieTask(getContext(), mMovie,
+//                FetchMovieTask.REQUEST_REVIEWS,
+//                new GridFragment.FragmentCallback() {
+//                    @Override
+//                    public void onTaskDone(String result) {
+//                        try {
+//                            JSONObject jsonObject = new JSONObject(result);
+//                            JSONArray jsonArray = jsonObject.getJSONArray("results");
+//                            mMovie.reviews = new HashMap<>();
+//                            for (int i = 0; i < jsonArray.length(); i ++) {
+//                                String author = jsonArray.getJSONObject(i).getString("author");
+//                                String content = jsonArray.getJSONObject(i).getString("content");
+//                                mMovie.reviews.put(author,content);
+//                            }
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                });
+//        fetchMovieTask.execute();
+//    }
+//
+//    private void setTrailerList() {
+//        FetchMovieTask fetchMovieTask = new FetchMovieTask(getContext(), mMovie,
+//                FetchMovieTask.REQUEST_VIDEOS,
+//                new GridFragment.FragmentCallback() {
+//                    @Override
+//                    public void onTaskDone(String result) {
+//                        try {
+//                            JSONObject jsonObject = new JSONObject(result);
+//                            JSONArray jsonArray = jsonObject.getJSONArray("results");
+//                            mMovie.trailers = new HashMap<>();
+//                            for (int i = 0; i < jsonArray.length(); i ++) {
+//                                String key = jsonArray.getJSONObject(i).getString("key");
+//                                String name = jsonArray.getJSONObject(i).getString("name");
+//                                mMovie.trailers.put(key, name);
+//                            }
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                });
+//        fetchMovieTask.execute();
+//    }
 }

@@ -16,13 +16,13 @@ import android.widget.Toast;
 
 import com.example.petr.udacitypopularmovies.DetailActivity;
 import com.example.petr.udacitypopularmovies.R;
+import com.example.petr.udacitypopularmovies.Utility;
 import com.example.petr.udacitypopularmovies.api.MovieAdapter;
 import com.example.petr.udacitypopularmovies.api.MoviesAPI;
 import com.example.petr.udacitypopularmovies.objects.Movie;
 import com.example.petr.udacitypopularmovies.objects.Movies;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -43,7 +43,6 @@ public class GridFragment extends Fragment {
     @Bind(R.id.grid_view)
     GridView gridView;
     private ArrayList<Movie> mMovies = new ArrayList<>();
-    private List<Movie> results;
 
     private String SORT_BY_VOTE = "vote_average";
     private String SORT_BY_POPULARITY = "popularity";
@@ -84,26 +83,23 @@ public class GridFragment extends Fragment {
         }
 
         final RestAdapter adapter = new RestAdapter.Builder()
-                .setEndpoint(ENDPOINT)
+                .setEndpoint(getString(R.string.the_movieDB_base_url))
                 .build();
 
         MoviesAPI moviesAPI = adapter.create(MoviesAPI.class);
 
-        moviesAPI.getMovies(mCurrentSort + ".desc", api_key, "1000",
+        moviesAPI.getMovies(mCurrentSort + ".desc", getString(R.string.the_movieDB_API_key), "1000",
                 new Callback<Movies>() {
             @Override
             public void success(Movies movies, Response response) {
                 mMovies = (ArrayList<Movie>) movies.results;
                 mAdapter = new MovieAdapter(getContext(), mMovies);
                 gridView.setAdapter(mAdapter);
-                Log.e("mytag:getUrl", response.getUrl());
-
             }
 
             @Override
             public void failure(RetrofitError error) {
-                Toast.makeText(getContext(), "Что-то пошло не так", Toast.LENGTH_SHORT).show();
-                Log.e("mytag", error.toString());
+                Utility.showErrorToast(GridFragment.this,error);
             }
         });
 

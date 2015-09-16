@@ -23,7 +23,7 @@ public class Movie implements Parcelable {
     public String release_date;
     public double popularity;
     public int id;
-    public int duration;
+    public int runtime;
 
     public Map<String,String> trailers;
     public Map<String,String> reviews;
@@ -101,7 +101,7 @@ public class Movie implements Parcelable {
                 ", poster_path=" + poster_path +
                 ", release_date='" + release_date + '\'' +
                 ", db_id=" + id +
-                ", duration=" + duration +
+                ", runtime=" + runtime +
                 ", trailers=" + trailers +
                 ", reviews=" + reviews +
                 ", overview='" + overview + '\'' +
