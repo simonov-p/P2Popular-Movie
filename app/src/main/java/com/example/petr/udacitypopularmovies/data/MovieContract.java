@@ -44,6 +44,8 @@ public class MovieContract implements BaseColumns {
         public static final String COLUMN_VOTE_AVERAGE = "vote_average";
         public static final String COLUMN_VOTE_COUNT = "vote_count";
         public static final String COLUMN_POPULARITY = "popularity";
+        public static final String COLUMN_IS_FAVORITE = "is_favorite";
+        public static final String COLUMN_RUNTIME = "runtime";
 
         public static Uri buildMovieUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);

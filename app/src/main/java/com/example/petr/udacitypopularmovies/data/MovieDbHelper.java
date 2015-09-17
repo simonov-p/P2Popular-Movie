@@ -12,7 +12,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
 
     static final String DATABASE_NAME = "movie";
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 3;
 
     public MovieDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -30,13 +30,15 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 MovieContract.MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
 
                 // the ID of the location entry associated with this weather data
-                MovieContract.MovieEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL, " +
-                MovieContract.MovieEntry.COLUMN_MOVIE_TITLE + " TEXT NOT NULL, " +
+                MovieContract.MovieEntry.COLUMN_MOVIE_ID + " INTEGER, " +
+                MovieContract.MovieEntry.COLUMN_MOVIE_TITLE + " TEXT, " +
+                MovieContract.MovieEntry.COLUMN_IS_FAVORITE + " INTEGER, " +
                 MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW + " TEXT NOT NULL, " +
                 MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE + " TEXT NOT NULL, " +
                 MovieContract.MovieEntry.COLUMN_POPULARITY + " REAL NOT NULL, " +
-                MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE + " INTEGER NOT NULL, " +
+                MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE + " REAL NOT NULL, " +
                 MovieContract.MovieEntry.COLUMN_VOTE_COUNT + " INTEGER NOT NULL, " +
+                MovieContract.MovieEntry.COLUMN_RUNTIME + " INTEGER NOT NULL, " +
                 MovieContract.MovieEntry.COLUMN_POSTER_URL + " TEXT NOT NULL" + ");";
 
         Log.e("mytag:crate table:", SQL_CREATE_MOVIE_TABLE);

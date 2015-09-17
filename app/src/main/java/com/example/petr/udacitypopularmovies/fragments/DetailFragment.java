@@ -18,7 +18,8 @@ import android.widget.Toast;
 import com.example.petr.udacitypopularmovies.R;
 import com.example.petr.udacitypopularmovies.Utility;
 import com.example.petr.udacitypopularmovies.api.MoviesAPI;
-import com.example.petr.udacitypopularmovies.data.DBHelper;
+import com.example.petr.udacitypopularmovies.data.MovieContract;
+import com.example.petr.udacitypopularmovies.data.MovieDbHelper;
 import com.example.petr.udacitypopularmovies.objects.Movie;
 import com.squareup.picasso.Picasso;
 
@@ -54,8 +55,73 @@ public class DetailFragment extends Fragment {
     Button buttonDelete;
 
     private Movie mMovie;
-    private DBHelper mDBHelper;
+    private MovieDbHelper mDBHelper;
+    private View.OnClickListener myOnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Log.d(LOG_TAG, "click");
 
+            // создаем объект для данных
+            mMovie.isFavorite = true;
+//        cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, mMovie.title);
+//        cv.put(MovieContract.MovieEntry.COLUMN_IS_FAVORITE, mMovie.isFavorite);
+
+            // подключаемся к БД
+            SQLiteDatabase db = mDBHelper.getWritableDatabase();
+
+
+            switch (v.getId()) {
+                case R.id.detail_favorite_button:
+                    Log.d(LOG_TAG, "--- Insert in mytable: ---");
+                    // подготовим данные для вставки в виде пар: наименование столбца - значение
+                    ContentValues cv = new ContentValues();
+                    cv = mMovie.putMovieToCV();
+//                cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, mMovie.id);
+//                cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, mMovie.title);
+//                cv.put(MovieContract.MovieEntry.COLUMN_IS_FAVORITE, String.valueOf(mMovie.isFavorite));
+                    // вставляем запись и получаем ее ID
+                    long rowID = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, cv);
+                    Log.d(LOG_TAG, "row inserted, ID = " + rowID);
+                    break;
+                case R.id.detail_read:
+                    Log.d(LOG_TAG, "--- Rows in mytable: ---");
+                    // делаем запрос всех данных из таблицы mytable, получаем Cursor
+                    Cursor c = db.query(MovieContract.MovieEntry.TABLE_NAME, null, null, null, null, null, null);
+
+                    // ставим позицию курсора на первую строку выборки
+                    // если в выборке нет строк, вернется false
+                    if (c.moveToFirst()) {
+
+                        // определяем номера столбцов по имени в выборке
+                        int idColIndex = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID);
+                        int titleColIndex = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE);
+                        int ifFavColIndex = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_IS_FAVORITE);
+
+                        do {
+                            // получаем значения по номерам столбцов и пишем все в лог
+                            Log.d(LOG_TAG,
+                                    "ID = " + c.getInt(idColIndex) +
+                                            ", title = " + c.getString(titleColIndex) +
+                                            ", favorite = " + c.getString(ifFavColIndex));
+                            // переход на следующую строку
+                            // а если следующей нет (текущая - последняя), то false - выходим из цикла
+                        } while (c.moveToNext());
+                    } else
+                        Log.d(LOG_TAG, "0 rows");
+                    c.close();
+                    break;
+                case R.id.detail_delete:
+                    Log.d(LOG_TAG, "--- Clear mytable: ---");
+                    // удаляем все записи
+                    int clearCount = db.delete(MovieContract.MovieEntry.TABLE_NAME, null, null);
+                    Log.d(LOG_TAG, "deleted rows count = " + clearCount);
+                    break;
+            }
+            // закрываем подключение к БД
+            mDBHelper.close();
+
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -69,7 +135,7 @@ public class DetailFragment extends Fragment {
             mMovie = GridFragment.mAdapter.getItem(position);
 
             //db
-            mDBHelper = new DBHelper(getContext());
+            mDBHelper = new MovieDbHelper(getContext());
 
             setMoreInfo();
             setReviewList();
@@ -81,6 +147,7 @@ public class DetailFragment extends Fragment {
             overview.setText(mMovie.overview);
             voteView.setText(String.format(getString(R.string.vote), mMovie.vote_average));
 
+            poster.setOnClickListener(imageOnClick);
             buttonFavorite.setOnClickListener(myOnClick);
             buttonRead.setOnClickListener(myOnClick);
             buttonDelete.setOnClickListener(myOnClick);
@@ -163,73 +230,14 @@ public class DetailFragment extends Fragment {
                 });
     }
 
-private View.OnClickListener myOnClick = new View.OnClickListener() {
-    @Override
-    public void onClick(View v) {
-        // создаем объект для данных
-        ContentValues cv = new ContentValues();
-
-        // получаем данные из полей ввода
-        String name = mMovie.title;
-        String email = mMovie.overview;
-
-        // подключаемся к БД
-        SQLiteDatabase db = mDBHelper.getWritableDatabase();
-
-
-        switch (v.getId()) {
-            case R.id.detail_favorite_button:
-                Log.d(LOG_TAG, "--- Insert in mytable: ---");
-                // подготовим данные для вставки в виде пар: наименование столбца - значение
-
-                cv.put("title", name);
-                cv.put("overview", email);
-                // вставляем запись и получаем ее ID
-                long rowID = db.insert("mytable", null, cv);
-                Log.d(LOG_TAG, "row inserted, ID = " + rowID);
-                break;
-            case R.id.detail_read:
-                Log.d(LOG_TAG, "--- Rows in mytable: ---");
-                // делаем запрос всех данных из таблицы mytable, получаем Cursor
-                Cursor c = db.query("mytable", null, null, null, null, null, null);
-
-                // ставим позицию курсора на первую строку выборки
-                // если в выборке нет строк, вернется false
-                if (c.moveToFirst()) {
-
-                    // определяем номера столбцов по имени в выборке
-                    int idColIndex = c.getColumnIndex("id");
-                    int nameColIndex = c.getColumnIndex("title");
-                    int emailColIndex = c.getColumnIndex("overview");
-
-                    do {
-                        // получаем значения по номерам столбцов и пишем все в лог
-                        Log.d(LOG_TAG,
-                                "ID = " + c.getInt(idColIndex) +
-                                        ", title = " + c.getString(nameColIndex) +
-                                        ", overview = " + c.getString(emailColIndex));
-                        // переход на следующую строку
-                        // а если следующей нет (текущая - последняя), то false - выходим из цикла
-                    } while (c.moveToNext());
-                } else
-                    Log.d(LOG_TAG, "0 rows");
-                c.close();
-                break;
-            case R.id.detail_delete:
-                Log.d(LOG_TAG, "--- Clear mytable: ---");
-                // удаляем все записи
-                int clearCount = db.delete("mytable", null, null);
-                Log.d(LOG_TAG, "deleted rows count = " + clearCount);
-                break;
+    private View.OnClickListener imageOnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Log.e("mytag", mMovie.toString());
         }
-        // закрываем подключение к БД
-        mDBHelper.close();
+    };
 
-    }
-};
-
-
-    private  void getTransparent(View view){
-        view.setAlpha(view.getAlpha()/2);
+    private void getTransparent(View view) {
+        view.setAlpha(view.getAlpha() / 2);
     }
 }

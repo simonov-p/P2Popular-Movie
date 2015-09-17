@@ -25,22 +25,10 @@ public class Movie implements Parcelable {
     public double popularity;
     public int id;
     public int runtime;
+    public boolean isFavorite = false;
 
     public List<Review> reviews = new ArrayList<>();
     public List<Trailer> trailers = new ArrayList<>();
-
-//
-//    public Movie(int db_id, String title, String overview, String release_date, double popularity,
-//                 int vote_average, int vote_count, String poster_path) {
-//        this.title = title;
-//        this.overview = overview;
-//        this.vote_average = vote_average;
-//        this.vote_count = vote_count;
-//        this.poster_path = poster_path;
-//        this.release_date = release_date;
-//        this.popularity = popularity;
-//        this.id = db_id;
-//    }
 
     public Uri getPosterUri(){
         String POSTER_BASE_URI = "http://image.tmdb.org/t/p/";
@@ -96,13 +84,16 @@ public class Movie implements Parcelable {
 
     public ContentValues putMovieToCV (){
         ContentValues contentValues = new ContentValues();
-        contentValues.put(MovieContract.MovieEntry._ID, id);
+        contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, id);
         contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, title);
+        contentValues.put(MovieContract.MovieEntry.COLUMN_IS_FAVORITE, isFavorite ? 1 : 0);
         contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW, overview);
         contentValues.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, vote_average);
         contentValues.put(MovieContract.MovieEntry.COLUMN_VOTE_COUNT, vote_count);
-        contentValues.put(MovieContract.MovieEntry.COLUMN_POSTER_URL, poster_path.toString());
+        contentValues.put(MovieContract.MovieEntry.COLUMN_POSTER_URL, poster_path);
         contentValues.put(MovieContract.MovieEntry.COLUMN_POPULARITY, popularity);
+        contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE, release_date);
+        contentValues.put(MovieContract.MovieEntry.COLUMN_RUNTIME, runtime);
         return contentValues;
     }
 
