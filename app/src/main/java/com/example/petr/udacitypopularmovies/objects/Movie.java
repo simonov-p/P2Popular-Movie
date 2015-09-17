@@ -29,21 +29,6 @@ public class Movie implements Parcelable {
     public List<Review> reviews = new ArrayList<>();
     public List<Trailer> trailers = new ArrayList<>();
 
-
-
-//    public Movie (JSONObject object) throws JSONException {
-//        this.title = object.getString("title");
-//        this.overview = object.getString("overview");
-//        this.vote_average = object.getInt("vote_average");
-//        this.vote_count = object.getInt("vote_count");
-//        // remove first / symbol
-//        String posterPath = object.getString("poster_path").substring(1);
-//        this.poster_path = getPosterUri(posterPath);
-//        this.backdrop_path = getPosterUri(object.getString("backdrop_path").substring(1)).toString();
-//        this.release_date = object.getString("release_date");
-//        this.popularity = object.getDouble("popularity");
-//        this.id = object.getInt("id");
-//    }
 //
 //    public Movie(int db_id, String title, String overview, String release_date, double popularity,
 //                 int vote_average, int vote_count, String poster_path) {

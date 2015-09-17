@@ -128,7 +128,4 @@ public class GridFragment extends Fragment {
         return true;
     }
 
-    public interface FragmentCallback {
-        void onTaskDone(String result);
-    }
 }
