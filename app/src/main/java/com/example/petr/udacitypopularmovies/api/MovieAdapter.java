@@ -41,7 +41,7 @@ public class MovieAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return movies.get(position).db_id;
+        return movies.get(position).id;
     }
 
     @Override
@@ -52,10 +52,7 @@ public class MovieAdapter extends BaseAdapter {
         Movie movie = movies.get(position);
         ImageView imageView = (ImageView)convertView.findViewById(R.id.list_item_image_view);
 
-        Picasso.with(mContext).
-                load(movie.poster_path).
-                placeholder(R.drawable.placeholder).
-                error(R.drawable.placeholder).
+        Picasso.with(mContext).load(movie.getPosterUri()).
                 into(imageView);
 
         return convertView;
