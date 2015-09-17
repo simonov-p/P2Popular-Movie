@@ -29,21 +29,27 @@ import retrofit.client.Response;
  * Created by petr on 10.09.2015.
  */
 public class DetailFragment extends Fragment {
+    @Bind(R.id.detail_duration_text_view)
+    TextView durationView;
+    @Bind(R.id.detail_vote_average_text_view)
+    TextView voteView;
+    @Bind(R.id.detail_title_text_view)
+    TextView title;
+    @Bind(R.id.detail_image_view)
+    ImageView poster;
+    @Bind(R.id.detail_release_text_view)
+    TextView release;
+    @Bind(R.id.detail_overview_text_view)
+    TextView overview;
+    @Bind(R.id.detail_favorite_button)
+    Button buttonFavorite;
     private Movie mMovie;
-
-    @Bind(R.id.detail_duration_text_view) TextView durationView;
-    @Bind(R.id.detail_vote_average_text_view) TextView voteView;
-    @Bind(R.id.detail_title_text_view) TextView title;
-    @Bind(R.id.detail_image_view) ImageView poster;
-    @Bind(R.id.detail_release_text_view) TextView release;
-    @Bind(R.id.detail_overview_text_view) TextView overview;
-    @Bind(R.id.detail_favorite_button) Button buttonFavorite;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        ButterKnife.bind(this,rootView);
+        ButterKnife.bind(this, rootView);
         Intent intent = getActivity().getIntent();
 
         if (intent != null) {
@@ -51,8 +57,8 @@ public class DetailFragment extends Fragment {
             mMovie = GridFragment.mAdapter.getItem(position);
 
             setMoreInfo();
-//            setTrailerList();
-//            setReviewList();
+            setReviewList();
+            setTrailerList();
 
             title.setText(mMovie.title);
             Picasso.with(getActivity()).load(mMovie.getPosterUri()).into(poster);
@@ -92,49 +98,55 @@ public class DetailFragment extends Fragment {
                 });
     }
 
-//    private void  setReviewList() {
-//        FetchMovieTask fetchMovieTask = new FetchMovieTask(getContext(), mMovie,
-//                FetchMovieTask.REQUEST_REVIEWS,
-//                new GridFragment.FragmentCallback() {
-//                    @Override
-//                    public void onTaskDone(String result) {
-//                        try {
-//                            JSONObject jsonObject = new JSONObject(result);
-//                            JSONArray jsonArray = jsonObject.getJSONArray("results");
-//                            mMovie.reviews = new HashMap<>();
-//                            for (int i = 0; i < jsonArray.length(); i ++) {
-//                                String author = jsonArray.getJSONObject(i).getString("author");
-//                                String content = jsonArray.getJSONObject(i).getString("content");
-//                                mMovie.reviews.put(author,content);
-//                            }
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                });
-//        fetchMovieTask.execute();
-//    }
-//
-//    private void setTrailerList() {
-//        FetchMovieTask fetchMovieTask = new FetchMovieTask(getContext(), mMovie,
-//                FetchMovieTask.REQUEST_VIDEOS,
-//                new GridFragment.FragmentCallback() {
-//                    @Override
-//                    public void onTaskDone(String result) {
-//                        try {
-//                            JSONObject jsonObject = new JSONObject(result);
-//                            JSONArray jsonArray = jsonObject.getJSONArray("results");
-//                            mMovie.trailers = new HashMap<>();
-//                            for (int i = 0; i < jsonArray.length(); i ++) {
-//                                String key = jsonArray.getJSONObject(i).getString("key");
-//                                String name = jsonArray.getJSONObject(i).getString("name");
-//                                mMovie.trailers.put(key, name);
-//                            }
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                });
-//        fetchMovieTask.execute();
-//    }
+    private void setReviewList() {
+        final RestAdapter adapter = new RestAdapter.Builder()
+                .setEndpoint(getString(R.string.the_movieDB_base_url))
+                .build();
+
+        MoviesAPI moviesAPI = adapter.create(MoviesAPI.class);
+
+        moviesAPI.getMovieReviews(mMovie.id,
+                getString(R.string.the_movieDB_API_key),
+                new Callback<Movie.Reviews>() {
+                    @Override
+                    public void success(Movie.Reviews reviews, Response response) {
+                        mMovie.reviews = reviews.results;
+                        for (Movie.Review review : mMovie.reviews) {
+                            Log.e("mytag:review", review.toString());
+                        }
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void setTrailerList() {
+        final RestAdapter adapter = new RestAdapter.Builder()
+                .setEndpoint(getString(R.string.the_movieDB_base_url))
+                .build();
+
+        MoviesAPI moviesAPI = adapter.create(MoviesAPI.class);
+
+        moviesAPI.getMovieTrailers(mMovie.id,
+                getString(R.string.the_movieDB_API_key),
+                new Callback<Movie.Trailers>() {
+                    @Override
+                    public void success(Movie.Trailers trailers, Response response) {
+                        mMovie.trailers = trailers.results;
+
+                        for (Movie.Trailer trailer : mMovie.trailers) {
+                            Log.e("mytag:trailer", trailer.toString());
+                        }
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+    }
 }

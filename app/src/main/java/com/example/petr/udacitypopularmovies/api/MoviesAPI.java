@@ -19,4 +19,10 @@ public interface MoviesAPI {
     @GET("/3/movie/{id}")
     void getMovieMoreInfo(@Path("id")int id,@Query("api_key")String key, Callback<Movie> response);
 
+    @GET("/3/movie/{id}/reviews")
+    void getMovieReviews(@Path("id")int id,@Query("api_key")String key, Callback<Movie.Reviews> response);
+
+    @GET("/3/movie/{id}/videos")
+    void getMovieTrailers(@Path("id")int id,@Query("api_key")String key, Callback<Movie.Trailers> response);
+
 }

@@ -7,7 +7,8 @@ import android.os.Parcelable;
 
 import com.example.petr.udacitypopularmovies.data.MovieContract;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by petr on 09.09.2015.
@@ -25,8 +26,8 @@ public class Movie implements Parcelable {
     public int id;
     public int runtime;
 
-    public Map<String,String> trailers;
-    public Map<String,String> reviews;
+    public List<Review> reviews = new ArrayList<>();
+    public List<Trailer> trailers = new ArrayList<>();
 
 
 
@@ -118,5 +119,77 @@ public class Movie implements Parcelable {
         contentValues.put(MovieContract.MovieEntry.COLUMN_POSTER_URL, poster_path.toString());
         contentValues.put(MovieContract.MovieEntry.COLUMN_POPULARITY, popularity);
         return contentValues;
+    }
+
+    public class Reviews {
+        private int id;
+        private String page;
+        private String total_pages;
+        private String total_results;
+        public List<Review> results;
+
+        @Override
+        public String toString() {
+            return "Reviews{" +
+                    "id=" + id +
+                    ", page='" + page + '\'' +
+                    ", total_pages='" + total_pages + '\'' +
+                    ", total_results='" + total_results + '\'' +
+                    ", results=" + results +
+                    '}';
+        }
+    }
+
+    public class Review{
+        private String id;
+        private String author;
+        private String content;
+        private String url;
+
+        @Override
+        public String toString() {
+            return "Review{" +
+                    "id=" + id +
+                    ", author='" + author + '\'' +
+                    ", content='" + content + '\'' +
+                    ", url='" + url + '\'' +
+                    '}';
+        }
+    }
+
+    public class Trailers {
+        private int id;
+        public List<Trailer> results;
+
+        @Override
+        public String toString() {
+            return "Trailers{" +
+                    "id=" + id +
+                    ", results=" + results +
+                    '}';
+        }
+    }
+
+    public class Trailer{
+        private String id;
+        private String iso_639_1;
+        private String key;
+        private String name;
+        private String site;
+        private String size;
+        private String type;
+
+        @Override
+        public String toString() {
+            return "Trailer{" +
+                    "id='" + id + '\'' +
+                    ", iso_639_1='" + iso_639_1 + '\'' +
+                    ", key='" + key + '\'' +
+                    ", name='" + name + '\'' +
+                    ", site='" + site + '\'' +
+                    ", size='" + size + '\'' +
+                    ", type='" + type + '\'' +
+                    '}';
+        }
     }
 }
