@@ -60,30 +60,50 @@ public class DetailFragment extends Fragment {
     private View.OnClickListener mMarkOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
+//            setButtonType();
+            addRemoveFav();
+            setButtonType();
         }
     };
+    private void addRemoveFav(){
+        if (mMovie.isFavorite) {
+            removeFromDb();
+            mMovie.isFavorite = false;
+        } else {
+            addToDb();
+            mMovie.isFavorite = true;
+        }
+    }
+    private void removeFromDb(){
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        db.execSQL("delete from " + MovieContract.MovieEntry.TABLE_NAME + " where " +
+                MovieContract.MovieEntry.COLUMN_MOVIE_ID + "=" + mMovie.id);
+        db.close();
+    }
+    private void addToDb(){
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        ContentValues cv = mMovie.putMovieToCV();
+        long rowID = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, cv);
+        Log.d(LOG_TAG, "row inserted, ID = " + rowID);
+        db.close();
+    }
     private boolean checkMovie(){
         SQLiteDatabase db = mDBHelper.getReadableDatabase();
-        String selected;
-//        String query = "SELECT  * FROM " + MovieContract.MovieEntry.TABLE_NAME +
-//                " ORDER BY " + selected  + " DESC";
-
         String query = "SELECT  * FROM " + MovieContract.MovieEntry.TABLE_NAME;
-        // 2. get reference to writable DB
         Cursor cursor = db.rawQuery(query, null);
         int idColIndex = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID);
-
-
-        // 3. go over each row, build book and add it to list
         if (cursor.moveToFirst()) {
             do {
                 int db_id = cursor.getInt(idColIndex);
                 if (db_id == mMovie.id){
+                    mMovie.isFavorite = true;
                     return true;
                 }
             } while (cursor.moveToNext());
         }
+        mMovie.isFavorite = false;
+        cursor.close();
+        db.close();
         return false;
     }
     private View.OnClickListener myOnClick = new View.OnClickListener() {
@@ -151,6 +171,9 @@ public class DetailFragment extends Fragment {
         if (checkMovie()) {
             buttonFavorite.setBackgroundColor(getResources().getColor(R.color.white));
             buttonFavorite.setText(getString(R.string.remove_from_favorite));
+        } else {
+            buttonFavorite.setBackgroundColor(getResources().getColor(R.color.detail_frg_button_background));
+            buttonFavorite.setText(getString(R.string.mark_as_favorite));
         }
     }
 
@@ -179,7 +202,7 @@ public class DetailFragment extends Fragment {
             voteView.setText(String.format(getString(R.string.vote), mMovie.vote_average));
 
             poster.setOnClickListener(imageOnClick);
-            buttonFavorite.setOnClickListener(myOnClick);
+            buttonFavorite.setOnClickListener(mMarkOnClickListener);
             buttonRead.setOnClickListener(myOnClick);
             buttonDelete.setOnClickListener(myOnClick);
             setButtonType();
