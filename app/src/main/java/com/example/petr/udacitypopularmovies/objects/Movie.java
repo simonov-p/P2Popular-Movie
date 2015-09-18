@@ -69,6 +69,7 @@ public class Movie implements Parcelable {
     public String toString() {
         return "Movie{" +
                 "title='" + title + '\'' +
+                "isfav='" + isFavorite + '\'' +
                 ", vote_average=" + vote_average +
                 ", vote_count=" + vote_count +
                 ", popularity=" + popularity +
@@ -108,6 +109,7 @@ public class Movie implements Parcelable {
         public String toString() {
             return "Reviews{" +
                     "id=" + id +
+                    ", is fav='" + String.valueOf(isFavorite) + '\'' +
                     ", page='" + page + '\'' +
                     ", total_pages='" + total_pages + '\'' +
                     ", total_results='" + total_results + '\'' +

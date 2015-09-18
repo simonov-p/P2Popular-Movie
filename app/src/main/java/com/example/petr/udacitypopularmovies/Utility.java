@@ -21,7 +21,7 @@ public class Utility {
                     , Toast.LENGTH_SHORT).show();
             Log.e("mytag:getMessage", retrofitError.getMessage());
 //            Log.e("mytag:getUrl", retrofitError.getUrl());
-            Log.e("mytag:getBody", retrofitError.getBody().toString());
+//            Log.e("mytag:getBody", retrofitError.getBody().toString());
 //            Log.e("mytag:getCause", retrofitError.getCause().toString());
 //            Log.e("mytag:getResponse", retrofitError.getResponse().toString());
             Log.e("mytag:getResponsegetStatus", retrofitError.getResponse().getStatus() + "");

@@ -56,6 +56,36 @@ public class DetailFragment extends Fragment {
 
     private Movie mMovie;
     private MovieDbHelper mDBHelper;
+
+    private View.OnClickListener mMarkOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+        }
+    };
+    private boolean checkMovie(){
+        SQLiteDatabase db = mDBHelper.getReadableDatabase();
+        String selected;
+//        String query = "SELECT  * FROM " + MovieContract.MovieEntry.TABLE_NAME +
+//                " ORDER BY " + selected  + " DESC";
+
+        String query = "SELECT  * FROM " + MovieContract.MovieEntry.TABLE_NAME;
+        // 2. get reference to writable DB
+        Cursor cursor = db.rawQuery(query, null);
+        int idColIndex = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID);
+
+
+        // 3. go over each row, build book and add it to list
+        if (cursor.moveToFirst()) {
+            do {
+                int db_id = cursor.getInt(idColIndex);
+                if (db_id == mMovie.id){
+                    return true;
+                }
+            } while (cursor.moveToNext());
+        }
+        return false;
+    }
     private View.OnClickListener myOnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -63,8 +93,6 @@ public class DetailFragment extends Fragment {
 
             // создаем объект для данных
             mMovie.isFavorite = true;
-//        cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, mMovie.title);
-//        cv.put(MovieContract.MovieEntry.COLUMN_IS_FAVORITE, mMovie.isFavorite);
 
             // подключаемся к БД
             SQLiteDatabase db = mDBHelper.getWritableDatabase();
@@ -74,11 +102,7 @@ public class DetailFragment extends Fragment {
                 case R.id.detail_favorite_button:
                     Log.d(LOG_TAG, "--- Insert in mytable: ---");
                     // подготовим данные для вставки в виде пар: наименование столбца - значение
-                    ContentValues cv = new ContentValues();
-                    cv = mMovie.putMovieToCV();
-//                cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, mMovie.id);
-//                cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, mMovie.title);
-//                cv.put(MovieContract.MovieEntry.COLUMN_IS_FAVORITE, String.valueOf(mMovie.isFavorite));
+                    ContentValues cv = mMovie.putMovieToCV();
                     // вставляем запись и получаем ее ID
                     long rowID = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, cv);
                     Log.d(LOG_TAG, "row inserted, ID = " + rowID);
@@ -123,6 +147,13 @@ public class DetailFragment extends Fragment {
         }
     };
 
+    private void setButtonType(){
+        if (checkMovie()) {
+            buttonFavorite.setBackgroundColor(getResources().getColor(R.color.white));
+            buttonFavorite.setText(getString(R.string.remove_from_favorite));
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
@@ -151,6 +182,8 @@ public class DetailFragment extends Fragment {
             buttonFavorite.setOnClickListener(myOnClick);
             buttonRead.setOnClickListener(myOnClick);
             buttonDelete.setOnClickListener(myOnClick);
+            setButtonType();
+
         }
         return rootView;
     }
@@ -233,7 +266,7 @@ public class DetailFragment extends Fragment {
     private View.OnClickListener imageOnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Log.e("mytag", mMovie.toString());
+            Log.e(LOG_TAG, mMovie.toString());
         }
     };
 
