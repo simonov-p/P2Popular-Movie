@@ -211,9 +211,6 @@ public class DetailFragment extends Fragment {
                                 }
                             });
                         }
-                        for (Movie.Review review : mMovie.reviews) {
-                            Log.e("mytag:review", review.toString());
-                        }
                     }
 
                     @Override
@@ -229,14 +226,6 @@ public class DetailFragment extends Fragment {
                 .build();
 
         MoviesAPI moviesAPI = adapter.create(MoviesAPI.class);
-//
-//        if (convertView == null) {
-//            convertView = trailersListView.inflate(getContext(),R.layout.list_item_trailer, parent);
-//        }
-//        TextView trailerName = (TextView)convertView.findViewById(R.id.trailer_list_item_name_text_view);
-//        trailerName.setText(mMovie.trailers.get(position).name);
-//
-//        return convertView;
 
         moviesAPI.getMovieTrailers(mMovie.id,
                 getString(R.string.the_movieDB_API_key),
@@ -275,5 +264,4 @@ public class DetailFragment extends Fragment {
             Log.e(LOG_TAG, mMovie.toString());
         }
     };
-
 }
