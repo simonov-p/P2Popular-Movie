@@ -1,6 +1,7 @@
 package com.example.petr.udacitypopularmovies.objects;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -63,6 +64,21 @@ public class Movie implements Parcelable {
 
     private Movie(Parcel in) {
         mData = in.readInt();
+    }
+
+    public Movie(Cursor cursor) {
+        this.id = cursor.getInt(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_IS_FAVORITE));
+        this.title = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE));
+        this.isFavorite = cursor.getInt(cursor.getColumnIndex(MovieContract.MovieEntry.
+                COLUMN_IS_FAVORITE)) == 1;
+        this.overview = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW));
+        this.vote_average = cursor.getDouble(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE));
+        this.popularity = cursor.getDouble(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_POPULARITY));
+        this.vote_count = cursor.getInt(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_VOTE_COUNT));
+        this.runtime = cursor.getInt(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_RUNTIME));
+        this.poster_path = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_POSTER_URL));
+        this.release_date = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE));
+
     }
 
     @Override

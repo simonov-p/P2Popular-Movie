@@ -74,11 +74,11 @@ public class DetailFragment extends Fragment {
         @Override
         public void onClick(View v) {
             if (mMovie.isFavorite) {
-                removeFromDb();
                 mMovie.isFavorite = false;
+                removeFromDb();
             } else {
-                addToDb();
                 mMovie.isFavorite = true;
+                addToDb();
             }
             setButtonType();
         }
@@ -139,7 +139,8 @@ public class DetailFragment extends Fragment {
             int position = intent.getIntExtra(Intent.EXTRA_TEXT, -1);
             mMovie = GridFragment.mAdapter.getItem(position);
 
-            mDBHelper = new MovieDbHelper(getContext());
+//            mDBHelper = new MovieDbHelper(getContext());
+            mDBHelper = GridFragment.mDBHelper;
 
             setMoreInfo();
             setReviewList();

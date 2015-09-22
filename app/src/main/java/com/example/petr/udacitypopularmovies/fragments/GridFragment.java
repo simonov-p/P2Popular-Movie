@@ -2,9 +2,12 @@ package com.example.petr.udacitypopularmovies.fragments;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,6 +23,8 @@ import com.example.petr.udacitypopularmovies.R;
 import com.example.petr.udacitypopularmovies.Utility;
 import com.example.petr.udacitypopularmovies.api.MovieAdapter;
 import com.example.petr.udacitypopularmovies.api.MoviesAPI;
+import com.example.petr.udacitypopularmovies.data.MovieContract;
+import com.example.petr.udacitypopularmovies.data.MovieDbHelper;
 import com.example.petr.udacitypopularmovies.objects.Movie;
 import com.example.petr.udacitypopularmovies.objects.Movies;
 
@@ -45,14 +50,16 @@ public class GridFragment extends Fragment {
     GridView gridView;
     private ArrayList<Movie> mMovies = new ArrayList<>();
 
-    private String SORT_BY_VOTE = "vote";
+    private String SORT_BY_VOTE = "highest rated";
 //    private String SORT_BY_VOTE = "vote_average";
-    private String SORT_BY_POPULARITY = "popularity";
+    private String SORT_BY_POPULARITY = "most popular";
     private String SORT_BY_FAVORITES = "favorites";
 
     private String[] sortType = {SORT_BY_POPULARITY, SORT_BY_VOTE, SORT_BY_FAVORITES};
 
     private String mCurrentSort = SORT_BY_VOTE;
+    public static MovieDbHelper mDBHelper;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,6 +75,8 @@ public class GridFragment extends Fragment {
         ButterKnife.bind(this, root);
 
         updateMovies();
+        mDBHelper = new MovieDbHelper(getContext());
+
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -107,7 +116,31 @@ public class GridFragment extends Fragment {
                         }
                     });
         } else {
+            SQLiteDatabase db = mDBHelper.getReadableDatabase();
+            String query = "SELECT  * FROM " + MovieContract.MovieEntry.TABLE_NAME;
+            Cursor cursor = db.rawQuery(query, null);
+            int isFavoriteColIndex = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_IS_FAVORITE);
+            int i = 0;
+            mMovies = new ArrayList<>();
+            if (cursor.moveToFirst()) {
+                do {
+                    i++;
 
+                    Log.e("mytag:i", "" + i + " c:" + cursor.getInt(isFavoriteColIndex));
+
+                    if (cursor.getInt(isFavoriteColIndex) == 1){
+                        Movie movie = new Movie(cursor);
+
+                        mMovies.add(movie);
+                        Log.e("mytag", movie.toString());
+
+                    }
+                } while (cursor.moveToNext());
+            }
+            mAdapter = new MovieAdapter(getContext(), mMovies);
+            gridView.setAdapter(mAdapter);
+            cursor.close();
+            db.close();
         }
     }
 
