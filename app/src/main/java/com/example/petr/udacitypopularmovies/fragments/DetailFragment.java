@@ -4,20 +4,25 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.petr.udacitypopularmovies.R;
 import com.example.petr.udacitypopularmovies.Utility;
 import com.example.petr.udacitypopularmovies.api.MoviesAPI;
+import com.example.petr.udacitypopularmovies.api.ReviewsAdapter;
+import com.example.petr.udacitypopularmovies.api.TrailersAdapter;
 import com.example.petr.udacitypopularmovies.data.MovieContract;
 import com.example.petr.udacitypopularmovies.data.MovieDbHelper;
 import com.example.petr.udacitypopularmovies.objects.Movie;
@@ -49,44 +54,49 @@ public class DetailFragment extends Fragment {
     TextView overview;
     @Bind(R.id.detail_favorite_button)
     Button buttonFavorite;
-    @Bind(R.id.detail_read)
-    Button buttonRead;
-    @Bind(R.id.detail_delete)
-    Button buttonDelete;
+    @Bind(R.id.detail_trailers_header)
+    TextView trailersHeader;
+    @Bind(R.id.detail_trailers_list_view)
+    ListView trailersListView;
+    @Bind(R.id.detail_reviews_header)
+    TextView reviewsHeader;
+    @Bind(R.id.detail_reviews_list_view)
+    ListView reviewsListView;
 
     private Movie mMovie;
     private MovieDbHelper mDBHelper;
+    private TrailersAdapter mTrailersAdapter;
+    private ReviewsAdapter mReviewsAdapter;
+
 
     private View.OnClickListener mMarkOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-//            setButtonType();
-            addRemoveFav();
+            if (mMovie.isFavorite) {
+                removeFromDb();
+                mMovie.isFavorite = false;
+            } else {
+                addToDb();
+                mMovie.isFavorite = true;
+            }
             setButtonType();
         }
     };
-    private void addRemoveFav(){
-        if (mMovie.isFavorite) {
-            removeFromDb();
-            mMovie.isFavorite = false;
-        } else {
-            addToDb();
-            mMovie.isFavorite = true;
-        }
-    }
+
     private void removeFromDb(){
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         db.execSQL("delete from " + MovieContract.MovieEntry.TABLE_NAME + " where " +
                 MovieContract.MovieEntry.COLUMN_MOVIE_ID + "=" + mMovie.id);
         db.close();
     }
+
     private void addToDb(){
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         ContentValues cv = mMovie.putMovieToCV();
-        long rowID = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, cv);
-        Log.d(LOG_TAG, "row inserted, ID = " + rowID);
+        db.insert(MovieContract.MovieEntry.TABLE_NAME, null, cv);
         db.close();
     }
+
     private boolean checkMovie(){
         SQLiteDatabase db = mDBHelper.getReadableDatabase();
         String query = "SELECT  * FROM " + MovieContract.MovieEntry.TABLE_NAME;
@@ -106,66 +116,6 @@ public class DetailFragment extends Fragment {
         db.close();
         return false;
     }
-    private View.OnClickListener myOnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Log.d(LOG_TAG, "click");
-
-            // создаем объект для данных
-            mMovie.isFavorite = true;
-
-            // подключаемся к БД
-            SQLiteDatabase db = mDBHelper.getWritableDatabase();
-
-
-            switch (v.getId()) {
-                case R.id.detail_favorite_button:
-                    Log.d(LOG_TAG, "--- Insert in mytable: ---");
-                    // подготовим данные для вставки в виде пар: наименование столбца - значение
-                    ContentValues cv = mMovie.putMovieToCV();
-                    // вставляем запись и получаем ее ID
-                    long rowID = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, cv);
-                    Log.d(LOG_TAG, "row inserted, ID = " + rowID);
-                    break;
-                case R.id.detail_read:
-                    Log.d(LOG_TAG, "--- Rows in mytable: ---");
-                    // делаем запрос всех данных из таблицы mytable, получаем Cursor
-                    Cursor c = db.query(MovieContract.MovieEntry.TABLE_NAME, null, null, null, null, null, null);
-
-                    // ставим позицию курсора на первую строку выборки
-                    // если в выборке нет строк, вернется false
-                    if (c.moveToFirst()) {
-
-                        // определяем номера столбцов по имени в выборке
-                        int idColIndex = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID);
-                        int titleColIndex = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE);
-                        int ifFavColIndex = c.getColumnIndex(MovieContract.MovieEntry.COLUMN_IS_FAVORITE);
-
-                        do {
-                            // получаем значения по номерам столбцов и пишем все в лог
-                            Log.d(LOG_TAG,
-                                    "ID = " + c.getInt(idColIndex) +
-                                            ", title = " + c.getString(titleColIndex) +
-                                            ", favorite = " + c.getString(ifFavColIndex));
-                            // переход на следующую строку
-                            // а если следующей нет (текущая - последняя), то false - выходим из цикла
-                        } while (c.moveToNext());
-                    } else
-                        Log.d(LOG_TAG, "0 rows");
-                    c.close();
-                    break;
-                case R.id.detail_delete:
-                    Log.d(LOG_TAG, "--- Clear mytable: ---");
-                    // удаляем все записи
-                    int clearCount = db.delete(MovieContract.MovieEntry.TABLE_NAME, null, null);
-                    Log.d(LOG_TAG, "deleted rows count = " + clearCount);
-                    break;
-            }
-            // закрываем подключение к БД
-            mDBHelper.close();
-
-        }
-    };
 
     private void setButtonType(){
         if (checkMovie()) {
@@ -188,7 +138,6 @@ public class DetailFragment extends Fragment {
             int position = intent.getIntExtra(Intent.EXTRA_TEXT, -1);
             mMovie = GridFragment.mAdapter.getItem(position);
 
-            //db
             mDBHelper = new MovieDbHelper(getContext());
 
             setMoreInfo();
@@ -203,8 +152,6 @@ public class DetailFragment extends Fragment {
 
             poster.setOnClickListener(imageOnClick);
             buttonFavorite.setOnClickListener(mMarkOnClickListener);
-            buttonRead.setOnClickListener(myOnClick);
-            buttonDelete.setOnClickListener(myOnClick);
             setButtonType();
 
         }
@@ -247,6 +194,20 @@ public class DetailFragment extends Fragment {
                     @Override
                     public void success(Movie.Reviews reviews, Response response) {
                         mMovie.reviews = reviews.results;
+                        if (mMovie.reviews != null && mMovie.reviews.size() > 0) {
+                            reviewsHeader.setVisibility(View.VISIBLE);
+                            mReviewsAdapter = new ReviewsAdapter(getContext(),
+                                    mMovie);
+                            reviewsListView.setAdapter(mReviewsAdapter);
+
+                            reviewsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                    Toast.makeText(getContext(), mReviewsAdapter.getItem(position).content,
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
                         for (Movie.Review review : mMovie.reviews) {
                             Log.e("mytag:review", review.toString());
                         }
@@ -265,6 +226,14 @@ public class DetailFragment extends Fragment {
                 .build();
 
         MoviesAPI moviesAPI = adapter.create(MoviesAPI.class);
+//
+//        if (convertView == null) {
+//            convertView = trailersListView.inflate(getContext(),R.layout.list_item_trailer, parent);
+//        }
+//        TextView trailerName = (TextView)convertView.findViewById(R.id.trailer_list_item_name_text_view);
+//        trailerName.setText(mMovie.trailers.get(position).name);
+//
+//        return convertView;
 
         moviesAPI.getMovieTrailers(mMovie.id,
                 getString(R.string.the_movieDB_API_key),
@@ -272,9 +241,20 @@ public class DetailFragment extends Fragment {
                     @Override
                     public void success(Movie.Trailers trailers, Response response) {
                         mMovie.trailers = trailers.results;
+                        if (mMovie.trailers != null && mMovie.trailers.size() > 0) {
+                            trailersHeader.setVisibility(View.VISIBLE);
+                            mTrailersAdapter = new TrailersAdapter(getContext(),
+                                    mMovie);
+                            trailersListView.setAdapter(mTrailersAdapter);
 
-                        for (Movie.Trailer trailer : mMovie.trailers) {
-                            Log.e("mytag:trailer", trailer.toString());
+                            trailersListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                    startActivity(new Intent(Intent.ACTION_VIEW,
+                                            Uri.parse("http://www.youtube.com/watch?v=" +
+                                                    mTrailersAdapter.getItem(position).key)));
+                                }
+                            });
                         }
                     }
 
@@ -293,7 +273,4 @@ public class DetailFragment extends Fragment {
         }
     };
 
-    private void getTransparent(View view) {
-        view.setAlpha(view.getAlpha() / 2);
-    }
 }

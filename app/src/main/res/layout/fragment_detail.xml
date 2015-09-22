@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:fillViewport="true">
 
     <LinearLayout
@@ -19,6 +19,7 @@
             android:gravity="center_vertical"
             android:paddingLeft="@dimen/detail_title_text_view_left_padding"
             android:paddingStart="@dimen/detail_title_text_view_left_padding"
+            android:paddingRight="@dimen/detail_title_text_view_right_padding"
             android:text="@string/default_title"
             android:textColor="@color/white"
             android:textSize="@dimen/detail_title_text_view_text_size"
@@ -77,24 +78,6 @@
                     android:text="@string/mark_as_favorite"
                     android:textColor="@color/detail_frg_text"
                     android:textSize="@dimen/detail_button_text_view_text_size"/>
-                <Button
-                    android:id="@+id/detail_read"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@color/detail_frg_button_background"
-                    android:padding="@dimen/detail_small_padding"
-                    android:text="@string/mark_as_favorite"
-                    android:textColor="@color/detail_frg_text"
-                    android:textSize="@dimen/detail_button_text_view_text_size"/>
-                <Button
-                    android:id="@+id/detail_delete"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@color/detail_frg_button_background"
-                    android:padding="@dimen/detail_small_padding"
-                    android:text="@string/mark_as_favorite"
-                    android:textColor="@color/detail_frg_text"
-                    android:textSize="@dimen/detail_button_text_view_text_size"/>
             </LinearLayout>
         </LinearLayout>
 
@@ -102,8 +85,43 @@
             android:id="@+id/detail_overview_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/detail_overview_left_margin"
+            android:layout_marginLeft="@dimen/detail_fragment_margin"
+            android:layout_marginRight="@dimen/detail_fragment_margin"
             android:textSize="@dimen/detail_overview_text_view_text_size"
             />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:paddingLeft="@dimen/detail_title_text_view_left_padding"
+            android:paddingRight="@dimen/detail_title_text_view_left_padding"
+
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TRAILERS"
+                android:visibility="gone"
+                android:id="@+id/detail_trailers_header"/>
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:isScrollContainer="false"
+                android:id="@+id/detail_trailers_list_view"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="REVIEWS"
+                android:visibility="gone"
+                android:id="@+id/detail_reviews_header"/>
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:isScrollContainer="false"
+                android:id="@+id/detail_reviews_list_view"/>
+        </LinearLayout>
+
+
     </LinearLayout>
 </ScrollView>

@@ -23,5 +23,6 @@
     <string name="user_is_not_found">User is not found</string>
     <string name="resource_is_not_found">Resource is not found</string>
     <string name="forbidden">Forbidden</string>
+    <string name="default_trailer">Trailer</string>
 
 </resources>

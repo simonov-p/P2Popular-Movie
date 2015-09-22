@@ -47,7 +47,7 @@ public class MovieAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            convertView = layoutInflater.inflate(R.layout.list_item, parent, false);
+            convertView = layoutInflater.inflate(R.layout.list_item_grid_fragment, parent, false);
         }
         Movie movie = movies.get(position);
         ImageView imageView = (ImageView)convertView.findViewById(R.id.list_item_image_view);

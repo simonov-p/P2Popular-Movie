@@ -120,8 +120,8 @@ public class Movie implements Parcelable {
 
     public class Review{
         private String id;
-        private String author;
-        private String content;
+        public String author;
+        public String content;
         private String url;
 
         @Override
@@ -151,8 +151,8 @@ public class Movie implements Parcelable {
     public class Trailer{
         private String id;
         private String iso_639_1;
-        private String key;
-        private String name;
+        public String key;
+        public String name;
         private String site;
         private String size;
         private String type;
