@@ -121,7 +121,5 @@
                 android:isScrollContainer="false"
                 android:id="@+id/detail_reviews_list_view"/>
         </LinearLayout>
-
-
     </LinearLayout>
 </ScrollView>

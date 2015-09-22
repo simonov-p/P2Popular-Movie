@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -203,8 +204,10 @@ public class DetailFragment extends Fragment {
                             reviewsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                    Toast.makeText(getContext(), mReviewsAdapter.getItem(position).content,
-                                            Toast.LENGTH_LONG).show();
+                                    new AlertDialog.Builder(getContext())
+                                            .setTitle(mReviewsAdapter.getItem(position).author)
+                                            .setMessage(mReviewsAdapter.getItem(position).content)
+                                            .show();
                                 }
                             });
                         }
