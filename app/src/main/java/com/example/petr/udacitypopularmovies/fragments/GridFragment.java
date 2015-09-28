@@ -19,6 +19,7 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 import com.example.petr.udacitypopularmovies.DetailActivity;
+import com.example.petr.udacitypopularmovies.MainActivity;
 import com.example.petr.udacitypopularmovies.R;
 import com.example.petr.udacitypopularmovies.Utility;
 import com.example.petr.udacitypopularmovies.api.MovieAdapter;
@@ -81,9 +82,21 @@ public class GridFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(), DetailActivity.class);
+                if (MainActivity.isTwoPane()){
+                    Bundle args = new Bundle();
+                    args.putInt(DetailFragment.DETAIL_POSITION, position);
+
+                    DetailFragment fragment = new DetailFragment();
+                    fragment.setArguments(args);
+
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.movie_detail_container, fragment)
+                            .commit();
+                } else {
+                                    Intent intent = new Intent(getActivity(), DetailActivity.class);
                 intent.putExtra(Intent.EXTRA_TEXT, position);
                 startActivity(intent);
+                }
             }
         });
 

@@ -53,6 +53,8 @@ public class MovieAdapter extends BaseAdapter {
         ImageView imageView = (ImageView)convertView.findViewById(R.id.list_item_image_view);
 
         Picasso.with(mContext).load(movie.getPosterUri()).
+                placeholder(R.drawable.placeholder)
+                .error(R.drawable.placeholder).
                 into(imageView);
 
         return convertView;

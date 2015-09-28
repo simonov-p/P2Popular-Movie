@@ -41,6 +41,7 @@ import retrofit.client.Response;
  */
 public class DetailFragment extends Fragment {
     private static final String LOG_TAG = "mytag";
+    public static final String DETAIL_POSITION = "position";
     @Bind(R.id.detail_duration_text_view)
     TextView durationView;
     @Bind(R.id.detail_vote_average_text_view)
@@ -134,9 +135,15 @@ public class DetailFragment extends Fragment {
 
         ButterKnife.bind(this, rootView);
         Intent intent = getActivity().getIntent();
+        Bundle arguments = getArguments();
 
-        if (intent != null) {
-            int position = intent.getIntExtra(Intent.EXTRA_TEXT, -1);
+        if (intent != null || arguments != null) {
+            int position;
+            if (arguments != null) {
+                position = arguments.getInt(DetailFragment.DETAIL_POSITION);
+            } else {
+                position = intent.getIntExtra(Intent.EXTRA_TEXT, -1);
+            }
             mMovie = GridFragment.mAdapter.getItem(position);
 
 //            mDBHelper = new MovieDbHelper(getContext());
