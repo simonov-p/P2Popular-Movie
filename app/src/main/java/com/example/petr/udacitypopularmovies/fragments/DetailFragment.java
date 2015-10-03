@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -131,7 +132,8 @@ public class DetailFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+        ScrollView rootView = (ScrollView) inflater.inflate(R.layout.fragment_detail, container, false);
+        rootView.fullScroll(View.FOCUS_UP);
 
         ButterKnife.bind(this, rootView);
         Intent intent = getActivity().getIntent();
@@ -145,6 +147,7 @@ public class DetailFragment extends Fragment {
                 position = intent.getIntExtra(Intent.EXTRA_TEXT, -1);
             }
             mMovie = GridFragment.mAdapter.getItem(position);
+
 
 //            mDBHelper = new MovieDbHelper(getContext());
             mDBHelper = GridFragment.mDBHelper;

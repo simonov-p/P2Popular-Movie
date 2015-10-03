@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fillViewport="true">
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:isScrollContainer="true"
         android:orientation="vertical"
         >
 
@@ -17,13 +18,13 @@
             android:layout_marginBottom="@dimen/detail_title_text_view_bottom_margin"
             android:background="@color/detail_frg_button_background"
             android:gravity="center_vertical"
+            android:maxLines="3"
             android:paddingLeft="@dimen/detail_title_text_view_left_padding"
-            android:paddingStart="@dimen/detail_title_text_view_left_padding"
             android:paddingRight="@dimen/detail_title_text_view_right_padding"
+            android:paddingStart="@dimen/detail_title_text_view_left_padding"
             android:text="@string/default_title"
             android:textColor="@color/white"
             android:textSize="@dimen/detail_title_text_view_text_size"
-            android:maxLines="3"
             />
 
         <LinearLayout
@@ -87,39 +88,43 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/detail_fragment_margin"
             android:layout_marginRight="@dimen/detail_fragment_margin"
-            android:textSize="@dimen/detail_overview_text_view_text_size"
+            android:textSize="50dp"
             />
+        <!--android:textSize="@dimen/detail_overview_text_view_text_size"-->
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:paddingLeft="@dimen/detail_title_text_view_left_padding"
-            android:paddingRight="@dimen/detail_title_text_view_left_padding"
-
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+
+            android:paddingLeft="@dimen/detail_title_text_view_left_padding"
+            android:paddingRight="@dimen/detail_title_text_view_left_padding">
+
             <TextView
+                android:id="@+id/detail_trailers_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TRAILERS"
-                android:visibility="gone"
-                android:id="@+id/detail_trailers_header"/>
+                android:visibility="gone"/>
 
             <ListView
+                android:id="@+id/detail_trailers_list_view"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:isScrollContainer="false"
-                android:id="@+id/detail_trailers_list_view"/>
+                android:isScrollContainer="false"/>
+
             <TextView
+                android:id="@+id/detail_reviews_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="REVIEWS"
-                android:visibility="gone"
-                android:id="@+id/detail_reviews_header"/>
+                android:visibility="gone"/>
+
             <ListView
+                android:id="@+id/detail_reviews_list_view"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
-                android:isScrollContainer="false"
-                android:id="@+id/detail_reviews_list_view"/>
+                android:isScrollContainer="false"/>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>
