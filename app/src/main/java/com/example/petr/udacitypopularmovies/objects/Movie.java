@@ -67,7 +67,7 @@ public class Movie implements Parcelable {
     }
 
     public Movie(Cursor cursor) {
-        this.id = cursor.getInt(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_IS_FAVORITE));
+        this.id = cursor.getInt(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID));
         this.title = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE));
         this.isFavorite = cursor.getInt(cursor.getColumnIndex(MovieContract.MovieEntry.
                 COLUMN_IS_FAVORITE)) == 1;

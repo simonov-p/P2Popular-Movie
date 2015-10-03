@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -148,12 +147,10 @@ public class DetailFragment extends Fragment {
             }
             mMovie = GridFragment.mAdapter.getItem(position);
 
-
-//            mDBHelper = new MovieDbHelper(getContext());
             mDBHelper = GridFragment.mDBHelper;
 
             setMoreInfo();
-//            setReviewList();
+            setReviewList();
             setTrailerList();
 
             title.setText(mMovie.title);
@@ -162,7 +159,6 @@ public class DetailFragment extends Fragment {
             overview.setText(mMovie.overview);
             voteView.setText(String.format(getString(R.string.vote), mMovie.vote_average));
 
-            poster.setOnClickListener(imageOnClick);
             buttonFavorite.setOnClickListener(mMarkOnClickListener);
             setButtonType();
             return rootView;
@@ -186,11 +182,11 @@ public class DetailFragment extends Fragment {
                     public void success(Movie movie, Response response) {
                         mMovie.runtime = movie.runtime;
                         durationView.setText(String.format(getString(R.string.runtime), mMovie.runtime));
+                        durationView.setVisibility(View.VISIBLE);
                     }
 
                     @Override
                     public void failure(RetrofitError error) {
-                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -209,7 +205,7 @@ public class DetailFragment extends Fragment {
                     public void success(Movie.Reviews reviews, Response response) {
                         mMovie.reviews = reviews.results;
                         if (mMovie.reviews != null && mMovie.reviews.size() > 0) {
-//                            reviewsHeader.setVisibility(View.VISIBLE);
+                            reviewsHeader.setVisibility(View.VISIBLE);
                             mReviewsAdapter = new ReviewsAdapter(getContext(),
                                     mMovie);
                             reviewsListView.setAdapter(mReviewsAdapter);
@@ -220,7 +216,7 @@ public class DetailFragment extends Fragment {
                                     new AlertDialog.Builder(getContext())
                                             .setTitle(mReviewsAdapter.getItem(position).author)
                                             .setMessage(mReviewsAdapter.getItem(position).content)
-                                            .show();
+                                            .show().setCanceledOnTouchOutside(true);
                                 }
                             });
                         }
@@ -228,7 +224,8 @@ public class DetailFragment extends Fragment {
 
                     @Override
                     public void failure(RetrofitError error) {
-                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), getString(R.string.error_download), Toast.LENGTH_SHORT).show();
+
                     }
                 });
     }
@@ -247,7 +244,7 @@ public class DetailFragment extends Fragment {
                     public void success(Movie.Trailers trailers, Response response) {
                         mMovie.trailers = trailers.results;
                         if (mMovie.trailers != null && mMovie.trailers.size() > 0) {
-//                            trailersHeader.setVisibility(View.VISIBLE);
+                            trailersHeader.setVisibility(View.VISIBLE);
                             mTrailersAdapter = new TrailersAdapter(getContext(),
                                     mMovie);
                             trailersListView.setAdapter(mTrailersAdapter);
@@ -256,7 +253,7 @@ public class DetailFragment extends Fragment {
                                 @Override
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                     startActivity(new Intent(Intent.ACTION_VIEW,
-                                            Uri.parse("http://www.youtube.com/watch?v=" +
+                                            Uri.parse(getString(R.string.youtube_base_name) +
                                                     mTrailersAdapter.getItem(position).key)));
                                 }
                             });
@@ -265,16 +262,9 @@ public class DetailFragment extends Fragment {
 
                     @Override
                     public void failure(RetrofitError error) {
-                        Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
-
+                        Toast.makeText(getContext(), getString(R.string.error_download), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    private View.OnClickListener imageOnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Log.e(LOG_TAG, mMovie.toString());
-        }
-    };
 }

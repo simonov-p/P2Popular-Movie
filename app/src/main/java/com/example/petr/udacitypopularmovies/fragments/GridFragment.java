@@ -105,7 +105,6 @@ public class GridFragment extends Fragment {
     private void updateMovies() {
         String sortQuery = null;
         if (!mCurrentSort.equals(SORT_BY_FAVORITES)){
-
             sortQuery = mCurrentSort.equals(SORT_BY_VOTE) ? "vote_average" : "popularity";
             final RestAdapter adapter = new RestAdapter.Builder()
                     .setEndpoint(getString(R.string.the_movieDB_base_url))
@@ -124,6 +123,7 @@ public class GridFragment extends Fragment {
 
                         @Override
                         public void failure(RetrofitError error) {
+                            Toast.makeText(getContext(), getString(R.string.error_download), Toast.LENGTH_SHORT).show();
 
                         }
                     });
@@ -132,20 +132,12 @@ public class GridFragment extends Fragment {
             String query = "SELECT  * FROM " + MovieContract.MovieEntry.TABLE_NAME;
             Cursor cursor = db.rawQuery(query, null);
             int isFavoriteColIndex = cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_IS_FAVORITE);
-            int i = 0;
             mMovies = new ArrayList<>();
             if (cursor.moveToFirst()) {
                 do {
-                    i++;
-
-                    Log.e("mytag:i", "" + i + " c:" + cursor.getInt(isFavoriteColIndex));
-
                     if (cursor.getInt(isFavoriteColIndex) == 1){
                         Movie movie = new Movie(cursor);
-
                         mMovies.add(movie);
-                        Log.e("mytag", movie.toString());
-
                     }
                 } while (cursor.moveToNext());
             }
@@ -155,14 +147,6 @@ public class GridFragment extends Fragment {
             db.close();
         }
     }
-
-//    void printMovies(ArrayList<Movie> movies) {
-//        Log.e("mytag:", movies.size() + "");
-//
-//        for (Movie movie : movies) {
-//            Log.e("mytag:", movie.toString());
-//        }
-//    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
