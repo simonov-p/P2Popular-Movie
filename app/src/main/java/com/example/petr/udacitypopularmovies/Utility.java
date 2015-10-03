@@ -14,20 +14,4 @@ public class Utility {
         return release.substring(0,4);
     }
 
-    public static void showErrorToast(Fragment fragment, RetrofitError retrofitError) {
-        if (retrofitError.getMessage() != null) {
-            Toast.makeText(fragment.getActivity(),
-                    retrofitError.getMessage()
-                    , Toast.LENGTH_SHORT).show();
-            Log.e("mytag:getMessage", retrofitError.getMessage());
-//            Log.e("mytag:getUrl", retrofitError.getUrl());
-//            Log.e("mytag:getBody", retrofitError.getBody().toString());
-//            Log.e("mytag:getCause", retrofitError.getCause().toString());
-//            Log.e("mytag:getResponse", retrofitError.getResponse().toString());
-            Log.e("mytag:getResponsegetStatus", retrofitError.getResponse().getStatus() + "");
-            Log.e("mytag:getResponsegetReason", retrofitError.getResponse().getReason());
-        }
-
-
-    }
 }

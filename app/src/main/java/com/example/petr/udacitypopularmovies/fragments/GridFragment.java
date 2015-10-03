@@ -21,7 +21,6 @@ import android.widget.Toast;
 import com.example.petr.udacitypopularmovies.DetailActivity;
 import com.example.petr.udacitypopularmovies.MainActivity;
 import com.example.petr.udacitypopularmovies.R;
-import com.example.petr.udacitypopularmovies.Utility;
 import com.example.petr.udacitypopularmovies.api.MovieAdapter;
 import com.example.petr.udacitypopularmovies.api.MoviesAPI;
 import com.example.petr.udacitypopularmovies.data.MovieContract;
@@ -125,7 +124,7 @@ public class GridFragment extends Fragment {
 
                         @Override
                         public void failure(RetrofitError error) {
-                            Utility.showErrorToast(GridFragment.this,error);
+
                         }
                     });
         } else {

@@ -6,6 +6,7 @@
     <color name="detail_frg_button_background">#8fc451</color>
     <color name="detail_frg_text">#757575</color>
 
+    <color name="movie_light_green_background">#d4ffa9</color>
     <color name="movie_light_green">#8fc451</color>
     <color name="movie_green">#19c819</color>
     <color name="movie_dark_green">#00c800</color>

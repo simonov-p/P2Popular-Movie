@@ -139,12 +139,12 @@ public class DetailFragment extends Fragment {
         Intent intent = getActivity().getIntent();
         Bundle arguments = getArguments();
 
-        if (intent != null || arguments != null) {
+        if (GridFragment.mAdapter != null && (intent != null || arguments != null )) {
             int position;
             if (arguments != null) {
                 position = arguments.getInt(DetailFragment.DETAIL_POSITION);
             } else {
-                position = intent.getIntExtra(Intent.EXTRA_TEXT, -1);
+                position = intent.getIntExtra(Intent.EXTRA_TEXT, 1);
             }
             mMovie = GridFragment.mAdapter.getItem(position);
 
@@ -165,9 +165,11 @@ public class DetailFragment extends Fragment {
             poster.setOnClickListener(imageOnClick);
             buttonFavorite.setOnClickListener(mMarkOnClickListener);
             setButtonType();
+            return rootView;
 
+        } else {
+            return null;
         }
-        return rootView;
     }
 
     private void setMoreInfo() {
@@ -263,7 +265,7 @@ public class DetailFragment extends Fragment {
 
                     @Override
                     public void failure(RetrofitError error) {
-                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
 
                     }
                 });

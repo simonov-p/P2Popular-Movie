@@ -8,6 +8,7 @@
     android:stretchMode="columnWidth"
     android:numColumns="auto_fit"
     tools:context=".MainActivityFragment"
+    android:background="@color/movie_light_green_background"
     >
 
 </GridView>
