@@ -1,5 +1,6 @@
 package com.example.petr.udacitypopularmovies.fragments;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -7,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -153,7 +153,7 @@ public class DetailFragment extends Fragment {
             mDBHelper = GridFragment.mDBHelper;
 
             setMoreInfo();
-            setReviewList();
+//            setReviewList();
             setTrailerList();
 
             title.setText(mMovie.title);
@@ -207,7 +207,7 @@ public class DetailFragment extends Fragment {
                     public void success(Movie.Reviews reviews, Response response) {
                         mMovie.reviews = reviews.results;
                         if (mMovie.reviews != null && mMovie.reviews.size() > 0) {
-                            reviewsHeader.setVisibility(View.VISIBLE);
+//                            reviewsHeader.setVisibility(View.VISIBLE);
                             mReviewsAdapter = new ReviewsAdapter(getContext(),
                                     mMovie);
                             reviewsListView.setAdapter(mReviewsAdapter);
@@ -245,7 +245,7 @@ public class DetailFragment extends Fragment {
                     public void success(Movie.Trailers trailers, Response response) {
                         mMovie.trailers = trailers.results;
                         if (mMovie.trailers != null && mMovie.trailers.size() > 0) {
-                            trailersHeader.setVisibility(View.VISIBLE);
+//                            trailersHeader.setVisibility(View.VISIBLE);
                             mTrailersAdapter = new TrailersAdapter(getContext(),
                                     mMovie);
                             trailersListView.setAdapter(mTrailersAdapter);
