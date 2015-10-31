@@ -6,9 +6,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.example.petr.udacitypopularmovies.R;
 import com.example.petr.udacitypopularmovies.objects.Movie;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -51,11 +53,23 @@ public class MovieAdapter extends BaseAdapter {
         }
         Movie movie = movies.get(position);
         ImageView imageView = (ImageView)convertView.findViewById(R.id.list_item_image_view);
+        final ProgressBar progressBar = (ProgressBar)convertView.findViewById(R.id.progress_bar);
 
         Picasso.with(mContext).load(movie.getPosterUri()).
                 placeholder(R.drawable.placeholder)
                 .error(R.drawable.placeholder).
-                into(imageView);
+                into(imageView, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        progressBar.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onError() {
+
+                    }
+                });
+
 
         return convertView;
     }

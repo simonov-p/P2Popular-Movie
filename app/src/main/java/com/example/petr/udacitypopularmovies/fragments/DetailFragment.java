@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -58,17 +59,15 @@ public class DetailFragment extends Fragment {
     Button buttonFavorite;
     @Bind(R.id.detail_trailers_header)
     TextView trailersHeader;
-    @Bind(R.id.detail_trailers_list_view)
-    ListView trailersListView;
+    @Bind(R.id.trailers_container)
+    LinearLayout trailersContainer;
     @Bind(R.id.detail_reviews_header)
     TextView reviewsHeader;
-    @Bind(R.id.detail_reviews_list_view)
-    ListView reviewsListView;
+    @Bind(R.id.reviews_container)
+    LinearLayout reviewsContainer;
 
     private Movie mMovie;
     private MovieDbHelper mDBHelper;
-    private TrailersAdapter mTrailersAdapter;
-    private ReviewsAdapter mReviewsAdapter;
 
 
     private View.OnClickListener mMarkOnClickListener = new View.OnClickListener() {
@@ -206,19 +205,26 @@ public class DetailFragment extends Fragment {
                         mMovie.reviews = reviews.results;
                         if (mMovie.reviews != null && mMovie.reviews.size() > 0) {
                             reviewsHeader.setVisibility(View.VISIBLE);
-                            mReviewsAdapter = new ReviewsAdapter(getContext(),
-                                    mMovie);
-                            reviewsListView.setAdapter(mReviewsAdapter);
+                            reviewsContainer.setVisibility(View.VISIBLE);
+                            for (final Movie.Review review : mMovie.reviews){
+                                TextView reviewTextView = new TextView(getContext());
+                                reviewTextView.setPadding(getResources().getDimensionPixelSize(R.dimen.detail_small_padding),
+                                        getResources().getDimensionPixelSize(R.dimen.detail_small_padding),
+                                        getResources().getDimensionPixelSize(R.dimen.detail_small_padding),
+                                        getResources().getDimensionPixelSize(R.dimen.detail_small_padding));
 
-                            reviewsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                    new AlertDialog.Builder(getContext())
-                                            .setTitle(mReviewsAdapter.getItem(position).author)
-                                            .setMessage(mReviewsAdapter.getItem(position).content)
-                                            .show().setCanceledOnTouchOutside(true);
-                                }
-                            });
+                                reviewTextView.setText(review.author);
+                                reviewTextView.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        new AlertDialog.Builder(getContext())
+                                                .setTitle(review.author)
+                                                .setMessage(review.content)
+                                                .show().setCanceledOnTouchOutside(true);
+                                    }
+                                });
+                                reviewsContainer.addView(reviewTextView);
+                            }
                         }
                     }
 
@@ -245,18 +251,21 @@ public class DetailFragment extends Fragment {
                         mMovie.trailers = trailers.results;
                         if (mMovie.trailers != null && mMovie.trailers.size() > 0) {
                             trailersHeader.setVisibility(View.VISIBLE);
-                            mTrailersAdapter = new TrailersAdapter(getContext(),
-                                    mMovie);
-                            trailersListView.setAdapter(mTrailersAdapter);
-
-                            trailersListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            trailersContainer.setVisibility(View.VISIBLE);
+                            for (final Movie.Trailer trailer : mMovie.trailers){
+                                View layout = getLayoutInflater(getArguments()).inflate(R.layout.list_item_trailer, null);
+                                TextView trailerTextView = (TextView) layout.findViewById(R.id.trailer_list_item_text_view);
+                                trailerTextView.setText(trailer.name);
+                                layout.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
                                     startActivity(new Intent(Intent.ACTION_VIEW,
                                             Uri.parse(getString(R.string.youtube_base_name) +
-                                                    mTrailersAdapter.getItem(position).key)));
-                                }
-                            });
+                                                    trailer.key)));
+                                    }
+                                });
+                                trailersContainer.addView(layout);
+                            }
                         }
                     }
 

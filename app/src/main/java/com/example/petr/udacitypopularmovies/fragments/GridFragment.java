@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -48,7 +50,9 @@ public class GridFragment extends Fragment {
     public static MovieAdapter mAdapter;
     @Bind(R.id.grid_view)
     GridView gridView;
-    private ArrayList<Movie> mMovies = new ArrayList<>();
+
+    ArrayList<Movie> mMovies = new ArrayList<>();
+
 
     private String SORT_BY_VOTE = "highest rated";
 //    private String SORT_BY_VOTE = "vote_average";
@@ -65,6 +69,7 @@ public class GridFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        mAdapter = new MovieAdapter(getContext(), mMovies);
     }
 
     @Override
@@ -74,14 +79,19 @@ public class GridFragment extends Fragment {
 
         ButterKnife.bind(this, root);
 
-        updateMovies();
+        if (savedInstanceState != null){
+            mMovies = savedInstanceState.getParcelableArrayList("list");
+            mAdapter = new MovieAdapter(getContext(), mMovies);
+            gridView.setAdapter(mAdapter);
+        } else {
+            getMovies();
+        }
         mDBHelper = new MovieDbHelper(getContext());
-
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (MainActivity.isTwoPane()){
+                if (MainActivity.isTwoPane()) {
                     Bundle args = new Bundle();
                     args.putInt(DetailFragment.DETAIL_POSITION, position);
 
@@ -92,9 +102,9 @@ public class GridFragment extends Fragment {
                             .replace(R.id.movie_detail_container, fragment)
                             .commit();
                 } else {
-                                    Intent intent = new Intent(getActivity(), DetailActivity.class);
-                intent.putExtra(Intent.EXTRA_TEXT, position);
-                startActivity(intent);
+                    Intent intent = new Intent(getActivity(), DetailActivity.class);
+                    intent.putExtra(Intent.EXTRA_TEXT, position);
+                    startActivity(intent);
                 }
             }
         });
@@ -102,7 +112,13 @@ public class GridFragment extends Fragment {
         return root;
     }
 
-    private void updateMovies() {
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList("list", mMovies);
+        super.onSaveInstanceState(outState);
+    }
+
+    private void getMovies(){
         String sortQuery = null;
         if (!mCurrentSort.equals(SORT_BY_FAVORITES)){
             sortQuery = mCurrentSort.equals(SORT_BY_VOTE) ? "vote_average" : "popularity";
@@ -124,7 +140,6 @@ public class GridFragment extends Fragment {
                         @Override
                         public void failure(RetrofitError error) {
                             Toast.makeText(getContext(), getString(R.string.error_download), Toast.LENGTH_SHORT).show();
-
                         }
                     });
         } else {
@@ -164,7 +179,7 @@ public class GridFragment extends Fragment {
                         public void onClick(DialogInterface dialog, int which) {
                             mCurrentSort = sortType[which];
                             Toast.makeText(getContext(),mCurrentSort, Toast.LENGTH_SHORT).show();
-                            updateMovies();
+                            getMovies();
                         }
                     }).
                     show();
@@ -172,5 +187,4 @@ public class GridFragment extends Fragment {
         }
         return true;
     }
-
 }
