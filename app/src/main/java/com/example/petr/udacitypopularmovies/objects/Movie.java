@@ -48,7 +48,10 @@ public class Movie implements Parcelable {
     }
 
     public void writeToParcel(Parcel out, int flags) {
-        out.writeInt(mData);
+        out.writeString(title);
+        out.writeString(overview);
+        out.writeString(poster_path);
+        out.writeDouble(vote_average);
     }
 
     public static final Parcelable.Creator<Movie> CREATOR
@@ -63,8 +66,12 @@ public class Movie implements Parcelable {
     };
 
     private Movie(Parcel in) {
-        mData = in.readInt();
+        title = in.readString();
+        overview = in.readString();
+        poster_path = in.readString();
+        vote_average = in.readDouble();
     }
+
 
     public Movie(Cursor cursor) {
         this.id = cursor.getInt(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID));
