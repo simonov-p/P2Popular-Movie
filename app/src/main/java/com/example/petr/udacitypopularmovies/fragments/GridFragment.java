@@ -140,6 +140,8 @@ public class GridFragment extends Fragment {
                         @Override
                         public void failure(RetrofitError error) {
                             Toast.makeText(getContext(), getString(R.string.error_download), Toast.LENGTH_SHORT).show();
+                            Log.e("REST url:", error.getUrl());
+                            Log.e("REST msg:", error.getMessage());
                         }
                     });
         } else {
